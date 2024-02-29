@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "878499294419",
+    "firebase_url": "https://bantuz-singles-default-rtdb.firebaseio.com",
+    "project_id": "bantuz-singles",
+    "storage_bucket": "bantuz-singles.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878499294419:android:fb1d84a0e8c054c4317826",
+        "android_client_info": {
+          "package_name": "com.bantuzsingles"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "878499294419-ul950hjjp1vsrs9bn6v7p1cuaud9b12q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGBBk3IMnFcXdtfQvhUhVLUtCGrHTYEm4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "878499294419-ul950hjjp1vsrs9bn6v7p1cuaud9b12q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "878499294419-cdp9mqfngtsjuijol83e5ofeksfjh7la.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.bantuzsingles.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

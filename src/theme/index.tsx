@@ -1,0 +1,55 @@
+import { ThemeColors } from './themes.types'
+
+export const lightColors: ThemeColors = {
+  primary: '#98181F',
+  secondary: '#F85706',
+  accent: '#E4D1B8',
+  black: '#212121',
+  silver: '#8492A6',
+  snow: '#F5F5F7',
+  white: '#FFFFFF',
+  danger: '#FF4949',
+  warning: '#FFC82C',
+  background: '#E5E5E5',
+  loaderBackground: 'rgba(0, 0, 0,0.7)',
+  green: '#00FF00',
+  text_bubble: '#F5F5F7',
+  black_to_primary: '#212121',
+  white_on_white: '#FFFFFF',
+}
+
+export const darkColor: ThemeColors = {
+  primary: '#98181F',
+  secondary: '#F85706',
+  accent: '#E4D1B8',
+  black: '#212121',
+  silver: '#8492A6',
+  snow: '#F5F5F7',
+  white: '#FFFFFF',
+  danger: '#FF4949',
+  warning: '#FFC82C',
+  background: '#E5E5E5',
+  loaderBackground: 'rgba(0, 0, 0,0.7)',
+  green: '#00FF00',
+  text_bubble: '#F5F5F7',
+  black_to_primary: '#212121',
+  white_on_white: '#FFFFFF',
+}
+
+// export const darkColor: ThemeColors = {
+//   primary: '#DAAA40',
+//   secondary: '#F69D50',
+//   accent: '#E4D1B8',
+//   black: '#FFFFFF',
+//   silver: '#D1D1D1',
+//   snow: '#F5F5F7',
+//   white: '#212121',
+//   danger: '#FF4949',
+//   warning: '#FFC82C',
+//   background: '#2A2A2A',
+//   loaderBackground: 'rgba(255, 255, 255,0.7)',
+//   green: '#00FF00',
+//   text_bubble: '#F85706',
+//   black_to_primary: '#F85706',
+//   white_on_white: '#FFFFFF',
+// }
