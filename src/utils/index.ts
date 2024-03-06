@@ -17,7 +17,7 @@ const showToastMessage = (message: string, type: ToasTypes) => {
     position: 'top',
     type,
     text1: message,
-    visibilityTime: 4000, //Number of milliseconds after which Toast automatically hides
+    visibilityTime: 1000, //Number of milliseconds after which Toast automatically hides
     autoHide: true, //Toast automatically hides after a certain number of milliseconds, specified by the visibilityTime prop
     topOffset: 60,
     onPress: () => {

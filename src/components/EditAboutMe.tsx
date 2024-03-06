@@ -22,7 +22,12 @@ import {
 // import { launchImageLibrary } from 'react-native-image-picker'
 import Modal, { BottomModal, ModalContent } from 'react-native-modals'
 import { useDispatch, useSelector } from 'react-redux'
-import { addOrRemoveItem, itemIsPresent, replaceDefaultImage } from 'src/helper'
+import {
+  addOrRemoveItem,
+  itemIsPresent,
+  replaceDefaultImage,
+  updateBantuzUser,
+} from 'src/helper'
 import utils from 'src/utils'
 
 import Dropdown from './view/customs/Dropdown'
@@ -317,14 +322,19 @@ const EditAboutMe: React.FC<Props> = ({
 
     const response = await profileupdates.updateUseInfo(request)
 
+    console.log('====================================')
+    console.log('response: ', JSON.stringify(response))
+    console.log('====================================')
+
     if (response.ok) {
       getCurrentUser() //@ts-ignore
-      return Alert.alert('Success!', response.data.message)
+      return utils.showToastMessage(response.data.message, 'SUCCESS')
     }
 
-    return Alert.alert(
-      response.problem, //@ts-ignore
+    return utils.showToastMessage(
+      //@ts-ignore
       response.data?.message || response.data?.details,
+      'ERROR',
     )
   }
 
@@ -369,12 +379,13 @@ const EditAboutMe: React.FC<Props> = ({
 
     if (response.ok) {
       getCurrentUser() //@ts-ignore
-      return Alert.alert('Success!', response.data.message)
+      return utils.showToastMessage(response.data.message, 'SUCCESS')
     }
 
-    return Alert.alert(
-      response.problem, //@ts-ignore
+    return utils.showToastMessage(
+      //@ts-ignore
       response.data?.message || response.data?.details,
+      'ERROR',
     )
   }
 
@@ -384,7 +395,7 @@ const EditAboutMe: React.FC<Props> = ({
     onIsloading(false)
 
     if (response.ok) {
-      // @ts-ignore
+      //@ts-ignore
       const updatedData = updateBantuzUser(userData, response.data.data)
 
       dispatch(runLoginUser(updatedData))
@@ -393,6 +404,7 @@ const EditAboutMe: React.FC<Props> = ({
     }
     return utils.showToastMessage(
       `${
+        //@ts-ignore
         response.data?.message || response.data?.msg || 'Something went wrong'
       }`,
       'ERROR',

@@ -9,9 +9,8 @@ import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import { getAccroNames } from 'src/helper'
 
-import chatRouter from 'src/api/routers/chatRouter'
 import LeftSwipeIcon from 'src/assets/icons/leftswipeicon.svg'
-import RightSwipable from 'src/assets/icons/rightswipable.svg'
+// import RightSwipable from 'src/assets/icons/rightswipable.svg'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { ChatRoomListItem } from 'src/utils/shared-type'
 
@@ -21,12 +20,19 @@ type Props = {
   data: ChatRoomListItem
   index: number
   onClick: () => void
+  closeRow: (item: ChatRoomListItem) => void
 }
 
-const SwipeableChatList: React.FC<Props> = ({ data, index, onClick }) => {
+const SwipeableChatList: React.FC<Props> = ({
+  data,
+  index,
+  onClick,
+  closeRow,
+}) => {
   const { colors } = useThemeStyles()
 
   const row: any[] = []
+  let prevOpenedRow: { close: () => void }
 
   const onRenderLeftAction = (_progress: any, _dragX: any, _onClick: any) => {
     return (
@@ -39,19 +45,18 @@ const SwipeableChatList: React.FC<Props> = ({ data, index, onClick }) => {
   const renderRightActions = (_progress: any, _dragX: any, _onClick: any) => {
     return (
       <TouchableOpacity style={styles.rightswipable}>
-        <RightSwipable />
+        {/* <RightSwipable /> */}
       </TouchableOpacity>
     )
   }
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
-  const closeRow = async (index: number) => {
-    console.log('====================================')
-    console.log('data: ', data)
-    console.log('index: ', index)
-    console.log('====================================')
-
-    const response = await chatRouter.markMessageAsRead(data.user.username)
+  const closedRow = (index: number) => {
+    if (prevOpenedRow && prevOpenedRow !== row[index]) {
+      prevOpenedRow.close()
+    }
+    closeRow(data)
+    prevOpenedRow = row[index]
   }
 
   const styles = StyleSheet.create({
@@ -136,7 +141,7 @@ const SwipeableChatList: React.FC<Props> = ({ data, index, onClick }) => {
       //@ts-ignore
       renderLeftActions={onRenderLeftAction}
       renderRightActions={renderRightActions}
-      onSwipeableOpen={() => closeRow(index)}
+      onSwipeableOpen={() => closedRow(index)}
       ref={ref => (row[index] = ref)}>
       <TouchableOpacity style={styles.touchableOpacity} onPress={onClick}>
         <View style={styles.imageContainer}>

@@ -245,6 +245,7 @@ const ChatRoom: React.FC<ScreenProps> = ({ navigation, route }) => {
       paddingTop: 8,
       fontSize: 16,
       fontWeight: '500',
+      color: '#000000',
     },
     send_button: {
       padding: 16,

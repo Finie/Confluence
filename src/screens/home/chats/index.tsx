@@ -48,28 +48,29 @@ const ChatRoomsList: React.FC<ScreenProps> = ({ navigation }) => {
 
   const isFocused = useIsFocused()
 
-  useEffect(() => {
-    const fetchChatrooms = async () => {
-      setIsLoading(true)
-      const response = await chatRouter.getMessageChatRooms()
-      setIsLoading(false)
+  const fetchChatrooms = useCallback(async () => {
+    setIsLoading(true)
+    const response = await chatRouter.getMessageChatRooms()
+    setIsLoading(false)
 
-      if (response.ok) {
-        //@ts-ignore
-        setChatroomList(response.data.data)
-        return
-      }
-
-      return utils.showToastMessage(
-        //@ts-ignore
-        `Could not load chats: ${response.data.message}`,
-        'ERROR',
-      )
+    if (response.ok) {
+      //@ts-ignore
+      setChatroomList(response.data.data)
+      return
     }
+
+    return utils.showToastMessage(
+      //@ts-ignore
+      `Could not load chats: ${response.data.message}`,
+      'ERROR',
+    )
+  }, [])
+
+  useEffect(() => {
     if (isFocused) {
       fetchChatrooms()
     }
-  }, [isFocused])
+  }, [fetchChatrooms, isFocused])
 
   const onSearchChatRoom = useCallback(
     (_searchText: string) => {
@@ -79,6 +80,15 @@ const ChatRoomsList: React.FC<ScreenProps> = ({ navigation }) => {
     },
     [chatroomList],
   )
+
+  const markasRead = async (item: ChatRoomListItem) => {
+    setIsLoading(true)
+    const response = await chatRouter.markMessageAsRead(item.user.username)
+
+    if (response.ok) {
+      fetchChatrooms()
+    }
+  }
 
   const styles = StyleSheet.create({
     scroll_bars: {
@@ -154,6 +164,9 @@ const ChatRoomsList: React.FC<ScreenProps> = ({ navigation }) => {
                       chathead: chatroom,
                     })
                   }}
+                  closeRow={(item: ChatRoomListItem) => {
+                    markasRead(item)
+                  }}
                 />
               ))
             ) : (
@@ -177,6 +190,9 @@ const ChatRoomsList: React.FC<ScreenProps> = ({ navigation }) => {
                 <SwipeableChatList
                   data={chatroom}
                   index={index}
+                  closeRow={(item: ChatRoomListItem) => {
+                    markasRead(item)
+                  }}
                   onClick={function (): void {
                     navigation.navigate('ChatRoom', {
                       from: 'CHATS',

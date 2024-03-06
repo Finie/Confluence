@@ -17,7 +17,12 @@ const useStompSocket = (username: string | undefined, token: string) => {
 
   useEffect(() => {
     const connect = async () => {
-      const socket = new SockJS(`${Constants.BASE_URL}chat-ws`)
+      const header = {
+        Authorization: 'Bearer ' + token,
+        'App-ID': Constants.APP_ID,
+      }
+
+      const socket = new SockJS(`${Constants.BASE_URL}/chat-ws`)
 
       const stompClient = Stomp.over(() => socket)
 
@@ -33,23 +38,13 @@ const useStompSocket = (username: string | undefined, token: string) => {
       try {
         await new Promise<void>((resolve, reject) => {
           stompClient.connect(
-            {
-              Authorization: 'Bearer ' + token,
-              'App-ID': Constants.APP_ID,
-            },
+            header,
             () => {
               setConnected(true)
-              console.log('=============Connected=======================')
-              console.log(stompClientRef.current)
-              console.log('====================================')
+
+              utils.showToastMessage('Connected!', 'SUCCESS')
 
               stompClient.subscribe(`/user/${username}/private`, message => {
-                console.log(
-                  `=====Recieve====/user/${username}/private=============`,
-                )
-                console.log(JSON.stringify(message))
-                console.log('====================================')
-
                 //@ts-ignore
                 setMessages(prevMessages => [
                   ...prevMessages,
@@ -80,6 +75,10 @@ const useStompSocket = (username: string | undefined, token: string) => {
             },
             // eslint-disable-next-line @typescript-eslint/no-shadow
             (error: any) => {
+              setConnected(false)
+              console.log('====================================')
+              console.log('Failed: ', error)
+              console.log('====================================')
               reject(error)
             },
           )
@@ -102,13 +101,15 @@ const useStompSocket = (username: string | undefined, token: string) => {
   }, [connected, token, username])
 
   const sendMessage = (message: any) => {
+    const header = {
+      Authorization: 'Bearer ' + token,
+      'App-ID': Constants.APP_ID,
+    }
+
     //@ts-ignore
     stompClientRef.current.send(
       '/api/private-message',
-      {
-        Authorization: 'Bearer ' + token,
-        'App-ID': Constants.APP_ID,
-      },
+      header,
       JSON.stringify(message),
     )
   }
