@@ -524,7 +524,7 @@
 				CODE_SIGN_ENTITLEMENTS = BantuzSingles/BantuzSingles.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = VTP477X5XY;
 				ENABLE_BITCODE = NO;
@@ -571,7 +571,7 @@
 				CODE_SIGN_ENTITLEMENTS = BantuzSingles/BantuzSingles.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = VTP477X5XY;
 				EXCLUDED_ARCHS = "";

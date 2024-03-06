@@ -1,6 +1,10 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
+
 /* eslint-disable react-native/no-inline-styles */
 // import mime from 'mime'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Alert,
   Animated,
@@ -17,17 +21,23 @@ import {
 // import DraggableGrid from 'react-native-draggable-grid'
 // import { launchImageLibrary } from 'react-native-image-picker'
 import Modal, { BottomModal, ModalContent } from 'react-native-modals'
+import { useDispatch, useSelector } from 'react-redux'
+import { addOrRemoveItem, itemIsPresent, replaceDefaultImage } from 'src/helper'
+import utils from 'src/utils'
 
 import Dropdown from './view/customs/Dropdown'
 import DropdownHeight from './view/customs/DropdownHeight'
 import DropdownSingleSelection from './view/customs/DropdownSingleSelection'
+import EditPassionsIos from './view/EditPassionsIos'
 import authRoute from 'src/api/routers/authRoute'
 import homeRouter from 'src/api/routers/homeRouter'
 import profileupdates from 'src/api/routers/profileupdates'
 import CameraActive from 'src/assets/icons/cameraactive.svg'
 import VideoIcon from 'src/assets/icons/imageactive.svg'
-import BaseContextProvider from 'src/context/BaseContextProvider'
 import EncryptionStore from 'src/data/EncryptionStore'
+import { runLoginUser } from 'src/data/redux/slice/auth'
+import { UserSession } from 'src/data/redux/slice/auth/types'
+import { AuthState } from 'src/data/redux/state.types'
 import useImagePicker from 'src/hooks/useImagePicker'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { CarouselItemParalax, UserProfile } from 'src/utils/shared-type'
@@ -52,7 +62,8 @@ const EditAboutMe: React.FC<Props> = ({
   onEndPassionEditting,
 }) => {
   const { colors } = useThemeStyles()
-  const [imageData, getPhoto] = useImagePicker()
+  const dispatch = useDispatch()
+  const { imageData, getPhoto } = useImagePicker()
   const heights = [
     { id: "4'0", label: '4`0    (122cm)' },
     { id: "4'2", label: '4`2    (127cm)' },
@@ -135,15 +146,26 @@ const EditAboutMe: React.FC<Props> = ({
   const [isUpdatingPassion, setIsUpdatingPassion] = useState<boolean>(false)
   const windowWidh = windowWidt / 3
   const windowWidth = windowWidh - 18
-  // const windowHeight = Dimensions.get('window').height;
   const [bottomModalAndTitle, setbottomModalAndTitle] = useState<boolean>(false)
-  const [updatedDescription, setUpdatedDescription] = useState<string>('')
+
+  const { userSession } = useSelector((state: AuthState) => state.auth)
+
   //@ts-ignore
-  const { userData, setuserData } = useContext(BaseContextProvider)
+  const userData: UserSession = userSession
 
-  const userProfile: UserProfile = userData
+  console.log('====================================')
+  console.log('userdata: ', JSON.stringify(userData))
+  console.log('====================================')
 
+  //@ts-ignore
+  const userProfile: UserSession = userData
+
+  const [updatedDescription, setUpdatedDescription] = useState<string>(
+    //@ts-ignore
+    userSession?.profile.bio.bio,
+  )
   const [userHeight, setUserHeight] = useState(userProfile.profile.height)
+
   const [lookForGender, setLookForGender] = useState(
     userProfile.profile.bio.looking_for,
   )
@@ -231,14 +253,17 @@ const EditAboutMe: React.FC<Props> = ({
     onIsloading(false)
 
     if (respose.ok) {
-      return Alert.alert('Image was uploaded successfully')
+      return utils.showToastMessage(
+        'Image was uploaded successfully',
+        'SUCCESS',
+      )
     }
 
-    return Alert.alert(
-      respose.problem + ' : ' + respose.status,
+    return utils.showToastMessage(
       respose.status === 413
         ? 'Image too large' //@ts-ignore
         : respose.data?.message || 'Image was not uploaded successfully',
+      'ERROR',
     )
   }
 
@@ -362,13 +387,15 @@ const EditAboutMe: React.FC<Props> = ({
       // @ts-ignore
       const updatedData = updateBantuzUser(userData, response.data.data)
 
-      setuserData(updatedData)
+      dispatch(runLoginUser(updatedData))
       EncryptionStore.storeBantuUser(updatedData)
       return
     }
-    return Alert.alert(
-      'Oops...',
-      response.data?.message || response.data?.msg || 'Something went wrong',
+    return utils.showToastMessage(
+      `${
+        response.data?.message || response.data?.msg || 'Something went wrong'
+      }`,
+      'ERROR',
     )
   }
 
@@ -580,20 +607,24 @@ const EditAboutMe: React.FC<Props> = ({
     const result = replaceDefaultImage(userData.profile.media, item)
 
     userData.profile.media = result
+
     setUpdatedMedias(result)
     const response = await profileupdates.updateDefaultImage(item.id)
 
-    console.log('===============response=====================')
-    console.log(JSON.stringify(response.data))
-    console.log('====================================')
-
     if (response.ok) {
-      // @ts-ignore
       getCurrentUser()
-      return Alert.alert('Update Successfull', response.data.message)
+      return utils.showToastMessage(
+        // @ts-ignore
+        `Update Successfull ${response.data.message}`,
+        'SUCCESS',
+      )
     }
-    // @ts-ignore
-    return Alert.alert('Update Failed', response.data.message)
+
+    return utils.showToastMessage(
+      // @ts-ignore
+      `Update Failed ${response.data.message}`,
+      'SUCCESS',
+    )
   }
 
   const getCurrentList = (): CarouselItemParalax[] => {
@@ -852,6 +883,7 @@ const EditAboutMe: React.FC<Props> = ({
 
                     if (isPresent) {
                       //remove item
+                      //@ts-ignore
                       userProfile.profile.bio.languages = result
                       handleDeleteLanguage(+selectedItems.id)
                     } else {
@@ -1094,6 +1126,7 @@ const EditAboutMe: React.FC<Props> = ({
             <Text style={styles.placeholder_text}>Birthday</Text>
 
             <FloatingLabelInput
+              editable={false}
               onBlur={() => console.log()}
               onChangeText={() => console.log()}
               placeholder=""
@@ -1103,6 +1136,7 @@ const EditAboutMe: React.FC<Props> = ({
             <Text style={styles.placeholder_text}>Gender</Text>
 
             <FloatingLabelInput
+              editable={false}
               onBlur={() => console.log()}
               onChangeText={() => console.log()}
               placeholder=""

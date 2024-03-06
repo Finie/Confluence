@@ -1,3 +1,4 @@
+/* eslint-disable semi */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
@@ -11,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import utils from 'src/utils'
 
 import homeRouter from 'src/api/routers/homeRouter'
 import ParalaxBack from 'src/assets/icons/backbutton.svg'
@@ -20,7 +22,6 @@ import Button from 'src/components/Button'
 import PassionItem from 'src/components/PassionItem'
 import ImageSlider from 'src/components/view/ImageSlider'
 import OverLayLoader from 'src/components/view/OverLayLoader'
-import { VerticalMapList } from 'src/components/view/VerticalMapList'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { MainStackParamList } from 'src/routes/navigation.type'
 import { BantuProfile, UpdatedSavedProfile } from 'src/utils/shared-type'
@@ -52,6 +53,7 @@ const ParallaxScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
       const response = await homeRouter.getSelectedUserDetails(
         _userProfile.code,
       )
+
       setIsLoading(false)
 
       if (response.ok) {
@@ -246,18 +248,25 @@ const ParallaxScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
         style={styles.scroll_view}>
         <Animated.View style={[styles.carousel_container]}>
           <ImageSlider
-            images={[
-              {
-                id: 0,
-                name: 'string',
-                path:
-                  userData?.profile && userData.profile.media.length > 0
-                    ? userData?.profile.media[0]
-                    : '',
-                type: 'string',
-                is_default: true,
-              },
-            ]}
+            images={
+              userData?.profile?.media && userData.profile.media.length > 1
+                ? userData?.profile?.media
+                : [
+                    {
+                      id: 0,
+                      name: 'string',
+                      path: userData?.profile?.media
+                        ? userData.profile.media[0].path
+                        : utils.placeholderImage,
+                      // userData?.profile && userData.profile.media.length > 0
+                      //   ? userData?.profile.media[0]
+                      //   : ''
+
+                      type: 'string',
+                      is_default: true,
+                    },
+                  ]
+            }
             interval={6000}
             onBackPress={function (): void {
               navigation.goBack()
@@ -323,7 +332,7 @@ const ParallaxScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
                 </Text>
 
                 {/* eslint-disable-next-line react-native/no-inline-styles */}
-                <View style={{ width: '50%', marginTop: 24 }}>
+                <View style={{ width: '50%', marginTop: 24, marginBottom: 60 }}>
                   <Button title={'Block user'} onPress={handleBlockUser} />
                 </View>
               </View>

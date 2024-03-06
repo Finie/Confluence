@@ -1,13 +1,11 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useState } from 'react'
-import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native'
 import DynamicallySelectedPicker from 'react-native-dynamically-selected-picker'
+import { useDispatch } from 'react-redux'
 import { heights } from 'src/data'
 import { isEmpty } from 'src/helper'
 import * as Yup from 'yup'
@@ -18,9 +16,9 @@ import FabButton from 'src/components/FabButton'
 import AppForm from 'src/components/forms/AppForm'
 import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
+import { runAddRegistrationData } from 'src/data/redux/slice/auth'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { AuthNavigatorParamList } from 'src/routes/navigation.type'
-import { UserProfile } from 'src/utils/shared-type'
 
 type ScreenProps = NativeStackScreenProps<
   AuthNavigatorParamList,
@@ -31,15 +29,14 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label('Email'),
 })
 
-const BodyAndFrame: React.FC<ScreenProps> = ({ navigation, route }) => {
+const BodyAndFrame: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
-  const [ischecked, setisChecked] = useState(false)
   const [selectedIndex, setselectedIndex] = useState(3)
   const [bodyframe, setBodyframe] = useState('SLENDER')
   const [bodyHeight, setBodyHeight] = useState('')
   const [isheightError, setIsheightError] = useState(false)
 
-  const UserInfo: UserProfile = route.params.data
+  const dispatch = useDispatch()
 
   const windowWidth = Dimensions.get('window').width
 
@@ -56,23 +53,26 @@ const BodyAndFrame: React.FC<ScreenProps> = ({ navigation, route }) => {
     }
 
     setIsheightError(false)
-    const request = {
-      first_name: UserInfo.first_name,
-      email: UserInfo.email,
-      last_name: UserInfo.last_name,
-      password: UserInfo.password,
-      middle_name: UserInfo.middle_name,
-      phone: UserInfo.phone,
-      username: UserInfo.username,
-      profile: {
-        birth_date: UserInfo.profile.birth_date,
-        gender: UserInfo.profile.gender,
-        height: bodyHeight,
-        physical_frame: bodyframe,
-      },
-    }
 
-    navigation.navigate('EthnicityScreen', { data: request })
+    dispatch(
+      runAddRegistrationData({
+        dataType: 'MORE_DETAILS',
+        payload: {
+          height_frame: bodyHeight,
+        },
+      }),
+    )
+
+    dispatch(
+      runAddRegistrationData({
+        dataType: 'FRAME',
+        payload: {
+          frame: bodyframe,
+        },
+      }),
+    )
+
+    navigation.navigate('EthnicityScreen')
   }
 
   const handleRadioSwitch = (selection: string) => {

@@ -1,6 +1,11 @@
+/* eslint-disable react-native/no-inline-styles */
+
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Alert,
   ImageBackground,
@@ -9,7 +14,9 @@ import {
   View,
 } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
+import { useSelector } from 'react-redux'
 import { getOtherSwipe, getOtherUserOnMatch, isEmpty } from 'src/helper'
+import utils from 'src/utils'
 
 import homeRouter from 'src/api/routers/homeRouter'
 import Outline from 'src/assets/icons/loveoutline.svg'
@@ -18,7 +25,7 @@ import Text from 'src/components/Text'
 import MatchItem from 'src/components/view/MatchItem'
 import NoDatatDisplay from 'src/components/view/NoDatatDisplay'
 import OverLayLoader from 'src/components/view/OverLayLoader'
-import BaseContextProvider from 'src/context/BaseContextProvider'
+import { AuthState } from 'src/data/redux/state.types'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import {
   MainStackParamList,
@@ -34,14 +41,15 @@ type ScreenProps = CompositeScreenProps<
 const MatchesScreen: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
   const [isLoading, setIsloading] = useState(false)
-  const [is404Error, setis404Error] = useState('')
   const [matchData, setMatchData] = useState([])
 
   const isFocused = useIsFocused()
 
+  const { userSession } = useSelector((state: AuthState) => state.auth)
   // @ts-ignore
-  const { userData } = useContext(BaseContextProvider)
+  const userData = userSession
 
+  // @ts-ignore
   const userProfile: UserProfile = userData
 
   const fetchMatches = async () => {
@@ -51,16 +59,12 @@ const MatchesScreen: React.FC<ScreenProps> = ({ navigation }) => {
     setIsloading(false)
 
     if (response.ok) {
+      // @ts-ignore
       setMatchData(response.data.data.data)
       return
     }
 
-    if (response.status === 404) {
-      setis404Error(response.data.message)
-      return
-    }
-
-    return Alert.alert('Failed', response.data.message)
+    return utils.showToastMessage(`'Failed: ${response.data.message}`, 'ERROR')
   }
 
   useEffect(() => {
@@ -77,9 +81,7 @@ const MatchesScreen: React.FC<ScreenProps> = ({ navigation }) => {
 
   const onHandleMatchSelection = (match: MatchUserListItem) => {
     const result = getOtherUserOnMatch(match, userProfile.username)
-    console.log('============onHandleMatchSelection========================')
-    console.log(result)
-    console.log('====================================')
+
     navigation.navigate('ChatRoom', {
       request: result ? result : match.swipe_a.user_swiped,
       from: 'MATCHES',

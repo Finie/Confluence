@@ -1,31 +1,28 @@
+/* eslint-disable semi */
+
+/* eslint-disable no-unneeded-ternary */
 // import useNetInfo from '@react-native-community/netinfo'
 import moment from 'moment'
-import { Alert } from 'react-native'
 
 import {
   CarouselItemParalax,
+  ChatRoomListItem,
+  ConversionType,
+  ImageItem,
+  Location,
   MatchMessage,
   MatchUserListItem,
   Message,
   SavedProfile,
   SearchPassionItem,
-  SwipeActions,
   SwipedMatch,
   UpdatedSavedProfile,
-  UserProfile,
-} from 'src/utils/shared-type'
-import {
-  BantuProfile,
-  ChatRoomListItem,
-  ConversionType,
-  ImageItem,
-  Location,
 } from 'src/utils/shared-type'
 
 // const netInfo = useNetInfo.useNetInfo()
 
 export const isEmpty = (obj: { hasOwnProperty: (arg0: string) => any }) => {
-  for (var prop in obj) {
+  for (const prop in obj) {
     if (obj.hasOwnProperty(prop)) {
       return false
     }
@@ -34,10 +31,10 @@ export const isEmpty = (obj: { hasOwnProperty: (arg0: string) => any }) => {
 }
 
 export const getTheMinimumSelectableYear = () => {
-  var today = new Date()
-  var day = today.getDate()
-  var month = today.getMonth() + 1
-  var year = today.getFullYear() - 18
+  const today = new Date()
+  const day = today.getDate()
+  const month = today.getMonth() + 1
+  const year = today.getFullYear() - 18
 
   return `${year}-${month.toString().length === 1 ? '0' + month : month}-${
     day.toString().length === 1 ? '0' + day : day
@@ -93,15 +90,9 @@ export function getCurrentDate(): string {
   return isoString
 }
 
-export async function getLocationName({
-  accuracy,
-  altitude,
-  heading,
-  latitude,
-  longitude,
-  speed,
-}: Location) {
+export async function getLocationName({ latitude, longitude }: Location) {
   const apiKey = '<YOUR_API_KEY_HERE>'
+
   const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
 
   try {
@@ -145,15 +136,6 @@ export function sortItemsByIncreasingId(items: Message[]): Message[] {
   return items.sort((a, b) => a.id - b.id)
 }
 
-// export const isInternetReachable = (): boolean => {
-//   if (netInfo.isConnected && netInfo.isInternetReachable) {
-//     return true
-//   } else {
-//     Alert.alert('No internet', 'Please check your internet connection')
-//     return false
-//   }
-// }
-
 export const checkAndUpdateImageArray = (
   imageArray: ImageItem[],
   base64Image: string,
@@ -182,55 +164,61 @@ export const updateBantuzUser = (
   storedUser: SavedProfile,
   newUser: UpdatedSavedProfile,
 ): SavedProfile => {
-  return {
-    username: newUser?.username || storedUser.username,
-    first_name: newUser?.first_name || storedUser.first_name,
-    email: newUser?.email || storedUser.email,
-    last_name: newUser?.last_name || storedUser.last_name,
-    middle_name: newUser?.middle_name || storedUser.middle_name,
-    phone: newUser?.phone || storedUser.phone,
-    profile: {
-      birth_date: newUser?.profile.birth_date || storedUser.profile.birth_date,
-      gender: newUser?.profile.gender || storedUser.profile.gender,
-      height: newUser?.profile.height || storedUser.profile.height,
-      physical_frame:
-        newUser?.profile.physical_frame || storedUser.profile.physical_frame,
-      ethnicity: newUser?.profile.ethnicity || storedUser.profile.ethnicity,
-      location: {
-        id: newUser?.profile.location.id || storedUser.profile.location.id,
-        google_place_id:
-          newUser?.profile.location.google_place_id ||
-          storedUser.profile.location.google_place_id,
-        name:
-          newUser?.profile.location.name || storedUser.profile.location.name,
-        longitude:
-          newUser?.profile.location.longitude ||
-          storedUser.profile.location.longitude,
-        latitude:
-          newUser?.profile.location.latitude ||
-          storedUser.profile.location.latitude,
+  if (newUser?.username) {
+    return {
+      username: newUser?.username || storedUser.username,
+      first_name: newUser?.first_name || storedUser.first_name,
+      email: newUser?.email || storedUser.email,
+      last_name: newUser?.last_name || storedUser.last_name,
+      middle_name: newUser?.middle_name || storedUser.middle_name,
+      phone: newUser?.phone || storedUser.phone,
+      profile: {
+        birth_date:
+          newUser?.profile.birth_date || storedUser.profile.birth_date,
+        gender: newUser?.profile.gender || storedUser.profile.gender,
+        height: newUser?.profile.height || storedUser.profile.height,
+        physical_frame:
+          newUser?.profile.physical_frame || storedUser.profile.physical_frame,
+        ethnicity: newUser?.profile.ethnicity || storedUser.profile.ethnicity,
+        location: {
+          id: newUser?.profile.location.id || storedUser.profile.location.id,
+          google_place_id:
+            newUser?.profile.location.google_place_id ||
+            storedUser.profile.location.google_place_id,
+          name:
+            newUser?.profile.location.name || storedUser.profile.location.name,
+          longitude:
+            newUser?.profile.location.longitude ||
+            storedUser.profile.location.longitude,
+          latitude:
+            newUser?.profile.location.latitude ||
+            storedUser.profile.location.latitude,
+        },
+        media: newUser?.profile.media || storedUser.profile.media,
+        bio: {
+          bio: newUser?.profile.bio.bio || storedUser.profile.bio.bio,
+          looking_for:
+            newUser?.profile.bio.looking_for ||
+            storedUser.profile.bio.looking_for,
+          languages:
+            newUser?.profile.bio.languages || storedUser.profile.bio.languages,
+          passions:
+            newUser?.profile.bio.passions || storedUser.profile.bio.passions,
+          other_details:
+            newUser?.profile.bio.other_details ||
+            storedUser.profile.bio.other_details,
+        },
       },
-      media: newUser?.profile.media || storedUser.profile.media,
-      bio: {
-        bio: newUser?.profile.bio.bio || storedUser.profile.bio.bio,
-        looking_for:
-          newUser?.profile.bio.looking_for ||
-          storedUser.profile.bio.looking_for,
-        languages:
-          newUser?.profile.bio.languages || storedUser.profile.bio.languages,
-        passions:
-          newUser?.profile.bio.passions || storedUser.profile.bio.passions,
-        other_details:
-          newUser?.profile.bio.other_details ||
-          storedUser.profile.bio.other_details,
-      },
-    },
-    is_premium: newUser?.is_premium || storedUser.is_premium,
-    token: storedUser.token,
-    id: newUser?.id || storedUser.id,
-    status: newUser?.status || storedUser.status,
-    created_on: newUser?.created_on || storedUser.created_on,
-    last_modified_on: newUser?.last_modified_on || storedUser.last_modified_on,
+      is_premium: newUser?.is_premium || storedUser.is_premium,
+      token: storedUser.token,
+      id: newUser?.id || storedUser.id,
+      status: newUser?.status || storedUser.status,
+      created_on: newUser?.created_on || storedUser.created_on,
+      last_modified_on:
+        newUser?.last_modified_on || storedUser.last_modified_on,
+    }
+  } else {
+    return storedUser
   }
 }
 
@@ -318,16 +306,17 @@ export function addOrRemoveItem<T>(array: T[], item: T): T[] {
   if (isPresent) {
     // Item is already in the array, so remove it
     array.splice(index, indexx)
-  } else {
-    // Item is not in the array, so add it
-    array.push(item)
   }
+
+  // else {
+  //   // Item is not in the array, so add it
+  //   array.push(item)
+  // }
 
   return array
 }
 
 export function itemIsPresent<T>(array: T[], item: T): boolean {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   let isPresent = false
 
   array.filter(element => {

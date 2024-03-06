@@ -1,3 +1,6 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useContext, useState } from 'react'
 import { StyleSheet, View } from 'react-native'

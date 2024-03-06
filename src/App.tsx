@@ -1,3 +1,8 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
+
+/* eslint-disable react/no-unstable-nested-components */
 import { NavigationContainer } from '@react-navigation/native'
 import { useStripe } from '@stripe/stripe-react-native'
 import React, { useState } from 'react'
@@ -5,15 +10,17 @@ import { Linking } from 'react-native'
 import { ModalPortal } from 'react-native-modals'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import SplashScreen from 'react-native-splash-screen'
+import Toast from 'react-native-toast-message'
+import { Provider } from 'react-redux'
 
 import BaseContextProvider from './context/BaseContextProvider'
 import { ThemeProvider } from './context/ThemeContextProvider'
 import EncryptionStore from './data/EncryptionStore'
-import AuthNavigator from './routes/AuthNavigator'
-import MainNavigator from './routes/MainNavigator'
+import store from './data/redux'
+import { ErrorToast, SuccessToast, WarningToast } from './utils/customToast'
 import { SavedProfile } from './utils/shared-type'
 
-import { isEmpty } from './helper'
+import Navigator from './routes'
 
 const App = () => {
   const [userData, setuserData] = useState<SavedProfile | any>()
@@ -25,14 +32,8 @@ const App = () => {
 
   React.useEffect(() => {
     const restoreUser = async () => {
-      const result = await EncryptionStore.retrieveBantuUser()
       const restoreDistance = await EncryptionStore.retrieveStoredDistance()
       setIsInKilometers(restoreDistance)
-
-      if (!isEmpty(result)) {
-        setUserToken(result.token)
-        setuserData(result)
-      }
       SplashScreen.hide()
     }
     restoreUser()
@@ -72,32 +73,42 @@ const App = () => {
     return () => deepLinkListener.remove()
   }, [handleDeepLink])
 
+  const toastConfig = {
+    //@ts-ignore
+    SUCCESS: ({ text1 }) => <SuccessToast text1={text1} />,
+    //@ts-ignore
+    ERROR: ({ text1 }) => <ErrorToast text1={text1} />,
+    //@ts-ignore
+    WARNING: ({ text1 }) => <WarningToast text1={text1} />,
+  }
+
   return (
-    <ThemeProvider>
-      <BaseContextProvider.Provider
-        value={{
-          userData,
-          setuserData,
-          isInKilometers,
-          setIsInKilometers,
-          userToken,
-          setUserToken,
-          chatMate,
-          setChatMate,
-          selectedLanguage,
-          setSelectedLanguage,
-          selectedLookFor,
-          setSelectedLookFor,
-        }}>
-        <SafeAreaProvider>
-          <NavigationContainer>
-            {/* <PaymentScreen /> */}
-            {isEmpty(userData) ? <AuthNavigator /> : <MainNavigator />}
+    <Provider store={store}>
+      <ThemeProvider>
+        <BaseContextProvider.Provider
+          value={{
+            userData,
+            setuserData,
+            isInKilometers,
+            setIsInKilometers,
+            userToken,
+            setUserToken,
+            chatMate,
+            setChatMate,
+            selectedLanguage,
+            setSelectedLanguage,
+            selectedLookFor,
+            setSelectedLookFor,
+          }}>
+          <SafeAreaProvider>
+            <Navigator />
             <ModalPortal />
-          </NavigationContainer>
-        </SafeAreaProvider>
-      </BaseContextProvider.Provider>
-    </ThemeProvider>
+            {/* @ts-ignore */}
+            <Toast config={toastConfig} />
+          </SafeAreaProvider>
+        </BaseContextProvider.Provider>
+      </ThemeProvider>
+    </Provider>
   )
 }
 

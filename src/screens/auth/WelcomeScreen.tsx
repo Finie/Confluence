@@ -12,6 +12,7 @@ import {
 } from 'react-native'
 import Carousel from 'react-native-anchor-carousel'
 import Image from 'react-native-fast-image'
+import utils from 'src/utils'
 
 import Logo from 'src/assets/icons/batuz_singles_logo.png'
 import ImageWhite from 'src/assets/images/images.jpg'
@@ -33,7 +34,7 @@ const WelcomeScreen: React.FC<ScreenProps> = ({ navigation }) => {
   const [description, setdescription] = useState(' perfect match')
 
   const { width: windowWidth } = Dimensions.get('window')
-  var carousel = useRef(null)
+  const carousel = useRef(null)
 
   const data = [
     {
@@ -98,7 +99,6 @@ const WelcomeScreen: React.FC<ScreenProps> = ({ navigation }) => {
     if (renderNext === 5) {
       setrenderNext(1)
       onScrollEvent(1)
-
       return
     }
     onScrollEvent(renderNext + 1)

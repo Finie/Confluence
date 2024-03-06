@@ -1,3 +1,4 @@
+/* eslint-disable semi */
 import React, { useContext, useState } from 'react'
 import {
   FlatList,
@@ -164,7 +165,7 @@ const PassionComponent: React.FC<Props> = ({
                   if (!isButtonDisabled) {
                     onUpdatePassion(item)
                   }
-                  updatedPassions.push(item) // @ts-ignore
+                  // updatedPassions.push(item) // @ts-ignore
                 }}
                 isActive={isSelectedPassion(item.id)}
               />
@@ -266,7 +267,7 @@ const PassionComponent: React.FC<Props> = ({
                         if (!isButtonDisabled) {
                           onUpdatePassion(item)
                         }
-                        updatedPassions.push(item) // @ts-ignore
+                        // updatedPassions.push(item) // @ts-ignore
                         updatedPassionsRemote.push(item)
 
                         const shift = shiftItemToFirstPosition(passion, item)
@@ -296,7 +297,6 @@ const PassionComponent: React.FC<Props> = ({
               setModalVisible(false)
             }}>
             <Text
-              //  eslint-disable-next-line react-native/no-inline-styles
               style={{
                 color: colors.white,
               }}>

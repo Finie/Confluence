@@ -1,15 +1,15 @@
 import apiClient from '../client/apiClient'
 
 const updateMedias = (request: any) => {
-  return apiClient.post('/api/user/media', request)
+  return apiClient.postRequest('/api/user/media', request)
 }
 
 const updateUseInfo = (request: any) => {
-  return apiClient.put('/api/user/me', request)
+  return apiClient.updateRequest('/api/user/me', request)
 }
 
 const updatePassion = (passionId: string) => {
-  return apiClient.post(`/api/user/me/passion/${passionId}`)
+  return apiClient.postRequest(`/api/user/me/passion/${passionId}`)
 }
 
 const deletePassion = (passionId: string) => {
@@ -17,11 +17,11 @@ const deletePassion = (passionId: string) => {
 }
 
 const updateDefaultImage = (imageId: number) => {
-  return apiClient.put(`/api/user/media/make-default/${imageId}`)
+  return apiClient.updateRequest(`/api/user/media/make-default/${imageId}`)
 }
 
 const updateLanguages = (languadeId: number) => {
-  return apiClient.post(`/api/user/me/language/${languadeId}`)
+  return apiClient.postRequest(`/api/user/me/language/${languadeId}`)
 }
 
 const deleteLanguage = (languadeId: number) => {
@@ -32,11 +32,11 @@ const updatePassword = (data: {
   current_password: string
   password: string
 }) => {
-  return apiClient.put('api/user/me/update-password', data)
+  return apiClient.updateRequest('api/user/me/update-password', data)
 }
 
 const deactivateAccount = () => {
-  return apiClient.put('api/user/me/pause')
+  return apiClient.updateRequest('api/user/me/pause')
 }
 
 const deleteAccount = () => {

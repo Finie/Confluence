@@ -1,44 +1,32 @@
+/* eslint-disable semi */
+
+/* eslint-disable import/order */
+
 /* eslint-disable react-native/no-inline-styles */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useContext, useEffect, useState } from 'react'
-import { Alert, StyleSheet, View } from 'react-native'
-import Toast from 'react-native-toast-message'
+import { StyleSheet, View } from 'react-native'
+import { useSelector } from 'react-redux'
 import { addRemoveArray, isEmpty } from 'src/helper'
+import utils from 'src/utils'
 
-// import SwipeCards from 'swipes-component'
 // import * as Yup from 'yup'
 import authRoute from 'src/api/routers/authRoute'
-// import profileupdates from 'src/api/routers/profileupdates'
-// import BirthDayCake from 'src/assets/icons/birthdaycake.svg'
-// import BirthDayCakeInactive from 'src/assets/icons/cakeinactive.svg'
-// import Fashion from 'src/assets/icons/fashionprimary.svg'
-// import PaintPrimary from 'src/assets/icons/fooddrinkprimary.svg'
-// import InactiveFashion from 'src/assets/icons/inactivefashion.svg'
-// import InactiveNote from 'src/assets/icons/inactivenote.svg'
 import Info from 'src/assets/icons/infoicon.svg'
-// import MapInactive from 'src/assets/icons/mapinactive.svg'
-// import Musicnote from 'src/assets/icons/musicnote.svg'
-// import PaintInactivr from 'src/assets/icons/paininactive.svg'
-// import Foodiconprimaty from 'src/assets/icons/paintprimary.svg'
 import Button from 'src/components/Button'
 import FloatingTextArea from 'src/components/FloatingTextArea'
-// import AppDropDownForm from 'src/components/forms/AppDropDownForm'
-// import AppForm from 'src/components/forms/AppForm'
-// import AppFormArea from 'src/components/forms/AppFormArea'
-// import SubmitButton from 'src/components/forms/SubmitButton'
 import PassionComponent from 'src/components/PassionComponent'
-// import PassionItem from 'src/components/PassionItem'
 import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
-// import TextInputError from 'src/components/TextInputError'
 import Dropdown from 'src/components/view/customs/Dropdown'
 import DropdownSingleSelection from 'src/components/view/customs/DropdownSingleSelection'
 import EditPassionsIos from 'src/components/view/EditPassionsIos'
-// import { VerticalMapList } from 'src/components/view/VerticalMapList'
 import BaseContextProvider from 'src/context/BaseContextProvider'
+import { AuthState } from 'src/data/redux/state.types'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { AuthNavigatorParamList } from 'src/routes/navigation.type'
-import { SwipeData, UserProfile } from 'src/utils/shared-type'
+import { RegistrationData } from 'src/utils/global.types'
+import { SwipeData } from 'src/utils/shared-type'
 
 type ScreenProps = NativeStackScreenProps<
   AuthNavigatorParamList,
@@ -52,7 +40,7 @@ interface BaseContext {
   setSelectedLookFor: any
 }
 
-const InterestsScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
+const InterestsScreen: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
   const {
     selectedLanguage,
@@ -61,10 +49,7 @@ const InterestsScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
     setSelectedLookFor, //@ts-ignore
   } = useContext<BaseContext>(BaseContextProvider)
 
-  const [moreSelected, setmoreSelected] = useState([] as any)
-  const [dataMore, setdataMore] = useState([])
   const [passion, setPassion] = useState([])
-  const [passionLoading, setPassionLoading] = useState(false)
   const [selectedPassion, setSelectedPassion] = useState([] as any)
   const [language, setLanguage] = useState([] as any)
   const [isPassionselected, setisPassionselected] = useState('')
@@ -76,29 +61,23 @@ const InterestsScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
   const [updatedPassionsRemote, setupdatedPassionsRemote] = useState([])
 
   const [isLoading, setIsloading] = useState(false)
-  const [isOthersFetching, setisOthersFetching] = useState(false)
   const [islookforset, setIslookforset] = useState('')
 
-  const UserInfo: UserProfile = route.params.data
+  const { registrationData } = useSelector((state: AuthState) => state.auth)
 
   const fetchPassions = async () => {
-    setPassionLoading(true)
     const response = await authRoute.fetchPassions()
-    setPassionLoading(false)
 
     if (response.ok) {
+      //@ts-ignore
       setPassion(response.data.data)
-      return
     }
   }
 
   const fetchOtherData = async () => {
-    setisOthersFetching(true)
     const response = await authRoute.fetchOtherPersions()
-    setisOthersFetching(false)
 
     if (response.ok) {
-      return
     }
   }
 
@@ -106,10 +85,10 @@ const InterestsScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
     const response = await authRoute.fetchLanguages()
 
     if (response.ok) {
+      //@ts-ignore
       setLanguage(response.data.data)
-      return
     }
-    Alert.alert('Request failed', response.data.message)
+    // Alert.alert('Request failed', response.data.message)
   }
 
   const handleSumbit = async () => {
@@ -127,48 +106,64 @@ const InterestsScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
       return
     }
 
-    const request: UserProfile = {
-      first_name: UserInfo.first_name,
-      email: UserInfo.email,
-      last_name: UserInfo.last_name,
-      password: UserInfo.password,
-      middle_name: UserInfo.middle_name,
-      phone: UserInfo.phone,
-      username: UserInfo.username,
-      profile: {
-        birth_date: UserInfo.profile.birth_date,
-        gender: UserInfo.profile.gender,
-        height: UserInfo.profile.height,
-        physical_frame: UserInfo.profile.physical_frame,
-        ethnicity: UserInfo.profile.ethnicity,
-        location: {
-          google_place_id: '',
-          name: '',
-          longitude: UserInfo.profile.location.longitude,
-          latitude: UserInfo.profile.location.latitude,
+    if (registrationData) {
+      const request: RegistrationData = {
+        first_name: registrationData?.first_name ?? '',
+        email: registrationData.email ?? '',
+        last_name: registrationData.last_name ?? '',
+        password: registrationData.password ?? '',
+        middle_name: registrationData.middle_name ?? '',
+        phone: registrationData.phone ?? '',
+        username: registrationData.username ?? '',
+        profile: {
+          birth_date: registrationData.profile.birth_date ?? '',
+          gender: registrationData.profile.gender ?? '',
+          height: registrationData.profile.height ?? '',
+          physical_frame: registrationData.profile.physical_frame ?? '',
+          ethnicity: registrationData.profile.ethnicity ?? '',
+          location: {
+            google_place_id:
+              registrationData.profile.location.google_place_id ?? '',
+            name: '',
+            longitude: registrationData.profile.location.longitude,
+            latitude: registrationData.profile.location.latitude,
+          },
+          // media: UserInfo.profile.media,
+          bio: {
+            bio: editaboutme,
+            looking_for: selectedLookFor === 0 ? 'MAN' : 'WOMAN',
+            language_ids: selectedLanguage,
+            passion_ids: getPassionIds(),
+            other_details_ids: [],
+          },
         },
-        // media: UserInfo.profile.media,
-        bio: {
-          bio: editaboutme,
-          looking_for: selectedLookFor === 0 ? 'MAN' : 'WOMAN',
-          language_ids: selectedLanguage,
-          passion_ids: getPassionIds(),
-          other_details_ids: moreSelected,
-        },
-      },
+      }
+
+      console.log('====================================')
+      console.log('account data: ', JSON.stringify(request))
+      console.log('====================================')
+
+      setIsloading(true)
+      const response = await authRoute.createUser(request)
+      setIsloading(false)
+
+      console.log('====================================')
+      console.log('response: ', JSON.stringify(response.data))
+      console.log('====================================')
+
+      if (response.ok) {
+        navigation.navigate('FinishScreen')
+        return
+      }
+
+      return utils.showToastMessage(
+        //@ts-ignore
+        `Request failed ${response.data.message ?? response.data.details}`,
+        'ERROR',
+      )
+    } else {
+      utils.showToastMessage('Reg data lost', 'WARNING')
     }
-
-    setIsloading(true)
-    const response = await authRoute.createUser(request)
-    setIsloading(false)
-
-    if (response.ok) {
-      navigation.navigate('FinishScreen')
-      return
-    }
-
-    //@ts-ignore
-    return Alert.alert('Request failed', response.data.message)
   }
 
   useEffect(() => {
@@ -340,8 +335,8 @@ const InterestsScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
     selectedPassion.splice(index, 1)
   }
 
-  const getPassionIds = (): string[] => {
-    const array: string[] = []
+  const getPassionIds = (): number[] => {
+    const array: number[] = []
     selectedPassion.map((item: { id: any }) => {
       if (item.id) {
         array.push(item.id)
@@ -436,6 +431,7 @@ const InterestsScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
                 <Text style={{ marginBottom: -8 }}>
                   I speak these languages
                 </Text>
+                {/* @ts-ignore */}
                 <Dropdown
                   title={'I speak these languages'}
                   options={language}

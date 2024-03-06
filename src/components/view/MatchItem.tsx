@@ -1,3 +1,7 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
+
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react'
 import { Image, StyleSheet, View } from 'react-native'

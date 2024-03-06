@@ -1,3 +1,6 @@
+/* eslint-disable semi */
+
+/* eslint-disable import/order */
 import { configureStore } from '@reduxjs/toolkit'
 
 import rootReducer from './slice/root.reducer'

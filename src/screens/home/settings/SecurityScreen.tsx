@@ -1,6 +1,11 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
+import utils from 'src/utils'
 import * as Yup from 'yup'
 
 import profileupdates from 'src/api/routers/profileupdates'
@@ -10,11 +15,12 @@ import AppFormInput from 'src/components/forms/AppFormInput'
 import SubmitButton from 'src/components/forms/SubmitButton'
 import Screen from 'src/components/screen/Screen'
 import Text from 'src/components/Text'
-import BaseContextProvider from 'src/context/BaseContextProvider'
 import EncryptionStore from 'src/data/EncryptionStore'
+import { runLogOut } from 'src/data/redux/slice/auth'
+import { UserSession } from 'src/data/redux/slice/auth/types'
+import { AuthState } from 'src/data/redux/state.types'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { MainStackParamList } from 'src/routes/navigation.type'
-import { UserProfile } from 'src/utils/shared-type'
 
 const validationSchema = Yup.object().shape({
   currentPassword: Yup.string().min(4).required().label('Old Password'),
@@ -33,8 +39,14 @@ type ScreenProps = NativeStackScreenProps<MainStackParamList, 'Security'>
 const SecurityScreen: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const { userData, setuserData } = useContext(BaseContextProvider)
-  const userProfile: UserProfile = userData
+
+  const dispatch = useDispatch()
+  const { userSession } = useSelector((state: AuthState) => state.auth)
+
+  const userData = userSession
+
+  //@ts-ignore
+  const userProfile: UserSession = userData
 
   const handleSubmit = async (data: any) => {
     setIsLoading(true)
@@ -45,11 +57,15 @@ const SecurityScreen: React.FC<ScreenProps> = ({ navigation }) => {
     setIsLoading(false)
 
     if (response.ok) {
-      Alert.alert('Request successful', 'Password updated')
-      setuserData(null)
+      utils.showToastMessage('Password updated successfylly', 'SUCCESS')
+      dispatch(runLogOut())
       EncryptionStore.destroyUser()
     } else {
-      Alert.alert('Request failed', response.data.message)
+      utils.showToastMessage(
+        //@ts-ignore
+        `Request failed ${response.data.message}`,
+        'ERROR',
+      )
     }
   }
 
@@ -59,11 +75,15 @@ const SecurityScreen: React.FC<ScreenProps> = ({ navigation }) => {
     setIsLoading(false)
 
     if (response.ok) {
-      Alert.alert('Request Successful', response.data.message)
-      setuserData(null)
+      utils.showToastMessage('Account deactivated successfylly', 'SUCCESS')
+      dispatch(runLogOut())
       EncryptionStore.destroyUser()
     } else {
-      Alert.alert('Request failed', response.data.message)
+      utils.showToastMessage(
+        //@ts-ignore
+        `Request failed ${response.data.message}`,
+        'ERROR',
+      )
     }
   }
 
@@ -73,13 +93,17 @@ const SecurityScreen: React.FC<ScreenProps> = ({ navigation }) => {
     setIsLoading(false)
 
     if (response.ok) {
-      Alert.alert('Request successful', 'Your Account has been deleted')
-      setuserData(null)
+      utils.showToastMessage('Your Account has been deleted', 'SUCCESS')
+      dispatch(runLogOut())
       EncryptionStore.destroyUser()
       return
     }
 
-    return Alert.alert('Request failed', response.data.message)
+    return utils.showToastMessage(
+      //@ts-ignore
+      `Request failed ${response.data.message}`,
+      'ERROR',
+    )
   }
 
   const styles = StyleSheet.create({

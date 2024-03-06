@@ -1,7 +1,11 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import React, { useContext, useState } from 'react'
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
-import Toast from 'react-native-toast-message'
+import React, { useState } from 'react'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useDispatch } from 'react-redux'
+import utils from 'src/utils'
 import * as Yup from 'yup'
 
 import authRoute from 'src/api/routers/authRoute'
@@ -11,10 +15,9 @@ import AppFormInput from 'src/components/forms/AppFormInput'
 import FabSubmit from 'src/components/forms/FabSubmit'
 import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
-import AuthContextProvider from 'src/context/AuthContextProvider'
+import { runAddRegistrationData } from 'src/data/redux/slice/auth'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { AuthNavigatorParamList } from 'src/routes/navigation.type'
-import { UserProfile } from 'src/utils/shared-type'
 
 type ScreenProps = NativeStackScreenProps<
   AuthNavigatorParamList,
@@ -30,41 +33,38 @@ const validationSchema = Yup.object().shape({
   ),
 })
 
-const EmailPassword: React.FC<ScreenProps> = ({ navigation, route }) => {
+const EmailPassword: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
   const [ischecked, setisChecked] = useState(false)
 
+  const dispatch = useDispatch()
+
   const [isLoading, setIsloading] = useState(false)
 
-  const { data } = route.params
+  // const { data } = route.params
 
-  const Usernames: UserProfile = data
+  // const Usernames: UserProfile = data
 
   const handleSumbit = async (data: { email: string; password: string }) => {
-    const request = {
-      first_name: Usernames.first_name,
-      email: data.email,
-      password: data.password,
-      last_name: Usernames.last_name,
-      middle_name: Usernames.middle_name,
-      phone: Usernames.phone,
-      username: Usernames.username,
-    }
+    dispatch(
+      runAddRegistrationData({
+        dataType: 'EMAIL',
+        payload: {
+          email: data.email,
+          password: data.password,
+        },
+      }),
+    )
 
     setIsloading(true)
     const response = await authRoute.checkEmailAvailability(data.email)
     setIsloading(false)
 
-    if (response.ok) {
-      // @ts-ignore
-      if (response.data.data) {
-        return navigation.navigate('BirthDayAge', { data: request })
-      }
-      return Alert.alert('Request failed', 'Sorry this email is already taken')
+    //@ts-ignore
+    if (response.ok && response.data && response.data.data) {
+      return navigation.navigate('BirthDayAge')
     }
-
-    // @ts-ignore
-    return Alert.alert('Request failed', response.data.message)
+    utils.showToastMessage('Email already taken', 'ERROR')
   }
 
   const handleSwitch = () => setisChecked(!ischecked)
@@ -128,6 +128,7 @@ const EmailPassword: React.FC<ScreenProps> = ({ navigation, route }) => {
           confirm: '',
         }}
         validationSchema={validationSchema}
+        // @ts-ignore
         onSubmit={handleSumbit}>
         <View style={styles.container}>
           <Text style={styles.howtwxt}>What’s your email?</Text>
@@ -135,6 +136,7 @@ const EmailPassword: React.FC<ScreenProps> = ({ navigation, route }) => {
           <AppFormInput
             name={'email'}
             placeholder={'Email'}
+            // @ts-ignore
             keyboardType={'email-address'}
           />
 

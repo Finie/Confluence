@@ -1,5 +1,5 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+/* eslint-disable semi */
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Animated,
   FlatList,
@@ -10,14 +10,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { useSelector } from 'react-redux'
 
 import ParalaxBack from 'src/assets/icons/backbutton.svg'
 import Direction from 'src/assets/icons/directions.svg'
 import PassionItem from 'src/components/PassionItem'
 import ImageSlider from 'src/components/view/ImageSlider'
-import BaseContextProvider from 'src/context/BaseContextProvider'
+import { UserSession } from 'src/data/redux/slice/auth/types'
+import { AuthState } from 'src/data/redux/state.types'
 import useThemeStyles from 'src/hooks/useThemeStyles'
-import { SavedProfile } from 'src/utils/shared-type'
 
 // type ScreenProps = NativeStackScreenProps<MainStackParamList, 'ParallaxScreen'>
 
@@ -26,10 +27,12 @@ const SettingsParallaxScreen = () => {
   const [translateUpdate, setTranslateUpdate] = useState<number>(-300)
   const { colors } = useThemeStyles()
 
-  //@ts-ignore
-  const { userData } = useContext(BaseContextProvider)
+  const { userSession } = useSelector((state: AuthState) => state.auth)
 
-  const userProfile: SavedProfile = userData
+  const userData = userSession
+
+  //@ts-ignore
+  const userProfile: UserSession = userData
 
   useEffect(() => {
     Animated.timing(translation, {

@@ -1,9 +1,12 @@
+/* eslint-disable semi */
+
+/* eslint-disable import/order */
+
 /* eslint-disable react-native/no-inline-styles */
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useCallback, useEffect, useState } from 'react'
 import {
-  Alert,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -12,6 +15,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { isEmpty, searchChatRoomListItems } from 'src/helper'
+import utils from 'src/utils'
 
 import chatRouter from 'src/api/routers/chatRouter'
 import HumberButton from 'src/assets/icons/humberbutton.svg'
@@ -51,11 +55,16 @@ const ChatRoomsList: React.FC<ScreenProps> = ({ navigation }) => {
       setIsLoading(false)
 
       if (response.ok) {
+        //@ts-ignore
         setChatroomList(response.data.data)
         return
       }
 
-      return Alert.alert('Could not load chats', response.data.message)
+      return utils.showToastMessage(
+        //@ts-ignore
+        `Could not load chats: ${response.data.message}`,
+        'ERROR',
+      )
     }
     if (isFocused) {
       fetchChatrooms()
@@ -63,9 +72,9 @@ const ChatRoomsList: React.FC<ScreenProps> = ({ navigation }) => {
   }, [isFocused])
 
   const onSearchChatRoom = useCallback(
-    (searchText: string) => {
-      setSearchText(searchText)
-      const result = searchChatRoomListItems(searchText, chatroomList)
+    (_searchText: string) => {
+      setSearchText(_searchText)
+      const result = searchChatRoomListItems(_searchText, chatroomList)
       setFilteredChatroomList(result)
     },
     [chatroomList],
@@ -97,6 +106,7 @@ const ChatRoomsList: React.FC<ScreenProps> = ({ navigation }) => {
       alignItems: 'center',
     },
   })
+
   return (
     <SafeAreaView
       style={{

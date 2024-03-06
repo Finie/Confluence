@@ -1,3 +1,5 @@
+/* eslint-disable import/order */
+
 /**
  * @file state.types index.ts will contain all the state types
  * that you will create ⚠️ ensure that you do not create a state
@@ -10,23 +12,7 @@
  */
 import { ASYNC_PROCESS_STATE } from '../slice/auth'
 import { UserSession } from '../slice/auth/types'
-
-export type SignUpData = {
-  firstName: string | null
-  lastName: string | null
-  dateOfBirth: string | null
-  userName?: string | null
-  invitationCode?: string | null
-  email: string | null
-  idNumber: string | null
-  idType: 'PASSPORT' | 'NATIONAL_ID' | 'ALIEN'
-}
-
-export type RegistrationData = {
-  _phone_number: string | null
-  _one_time_pin: string | null
-  _sign_up_data: SignUpData
-}
+import { RegistrationData } from 'src/utils/global.types'
 
 export type AuthStateData = {
   registrationData: RegistrationData
@@ -45,7 +31,6 @@ export type AuthStateData = {
   }
   userSession: UserSession | null
   isAuthorized: boolean
-  isFirstTimeLogin: boolean
 }
 
 export type AuthState = {

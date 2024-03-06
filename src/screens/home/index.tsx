@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-shadow */
+
+/* eslint-disable semi */
+
 /* eslint-disable react-hooks/exhaustive-deps */
 
 /* eslint-disable react-native/no-inline-styles */
@@ -101,6 +105,7 @@ const HomeScreen: React.FC<ScreenProps> = ({ navigation }) => {
 
         if (result.success) {
           setAvailableUsers(result.data)
+
           return
         }
 
@@ -494,29 +499,6 @@ const HomeScreen: React.FC<ScreenProps> = ({ navigation }) => {
             }}
           />
         )}
-
-        {/* <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('PaymentSelectionMode')
-          }}
-          style={styles.suboverall}>
-          <Image
-            source={bantusinlesIcon}
-            style={{
-              width: 40,
-              height: 40,
-            }}
-          />
-
-          <View style={styles.subscribecontainer}>
-            <Text style={styles.subscribetext}>
-              Subscribe to get more top picks, rewinds, and more!
-            </Text>
-          </View>
-          <TouchableOpacity style={styles.checkitouttouchable}>
-            <Text style={styles.checkitout}>Check it out →</Text>
-          </TouchableOpacity>
-        </TouchableOpacity> */}
       </View>
     </ScrollView>
   )

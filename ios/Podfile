@@ -1,5 +1,7 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../node_modules/react-native-permissions/scripts/setup'
+
 
 platform :ios, "13.0"
 prepare_react_native_project!
@@ -48,6 +50,31 @@ target 'BantuzSingles' do
   # Flags change depending on the env values.
   flags = get_default_flags()
 
+   # ⬇️ uncomment wanted permissions
+  setup_permissions([
+    # 'AppTrackingTransparency',
+    # 'Bluetooth',
+    # 'Calendars',
+    # 'CalendarsWriteOnly',
+    'Camera',
+    # 'Contacts',
+    # 'FaceID',
+    'LocationAccuracy',
+    'LocationAlways',
+    'LocationWhenInUse',
+    # 'MediaLibrary',
+    # 'Microphone',
+    # 'Motion',
+    # 'Notifications',
+    # 'PhotoLibrary',
+    # 'PhotoLibraryAddOnly',
+    # 'Reminders',
+    # 'Siri',
+    # 'SpeechRecognition',
+    # 'StoreKit',
+  ]  )
+
+
   use_react_native!(
     :path => config[:reactNativePath],
     # Hermes is now enabled by default. Disable by setting this flag to false.
@@ -63,8 +90,8 @@ target 'BantuzSingles' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-  permissions_path = '../node_modules/react-native-permissions/ios'
-  pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways/Permission-LocationAlways.podspec"
+  # permissions_path = '../node_modules/react-native-permissions/ios'
+  # pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways/Permission-LocationAlways.podspec"
 
 
   target 'BantuzSinglesTests' do

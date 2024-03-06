@@ -75,10 +75,6 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
     },
   })
 
-  console.log('====================================')
-  console.log('images: ', images)
-  console.log('====================================')
-
   return (
     <View style={styles.container}>
       {true ? (

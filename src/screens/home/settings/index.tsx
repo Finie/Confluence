@@ -1,8 +1,13 @@
+/* eslint-disable react-native/no-inline-styles */
+
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { CompositeScreenProps } from '@react-navigation/native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import mime from 'mime'
 import moment from 'moment'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Image,
   Platform,
@@ -13,31 +18,28 @@ import {
 } from 'react-native'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import { launchImageLibrary } from 'react-native-image-picker'
+import { useDispatch, useSelector } from 'react-redux'
 import { getDefaultImage } from 'src/helper'
 
-import homeRouter from 'src/api/routers/homeRouter'
 import bantusinlesIcon from 'src/assets/icons/batuz_singles_logo.png'
 import Face from 'src/assets/icons/face.svg'
-import Listred from 'src/assets/icons/listred.svg'
 import Security from 'src/assets/icons/securityicon.svg'
 import Support from 'src/assets/icons/support.svg'
 import Tune from 'src/assets/icons/tune.svg'
 import Button from 'src/components/Button'
 import CircularButton from 'src/components/CircularButton'
-import Link from 'src/components/Link'
 import ProfButton from 'src/components/ProfButton'
 import ProfileOutline from 'src/components/ProfileOutline'
 import Text from 'src/components/Text'
 import OverLayLoader from 'src/components/view/OverLayLoader'
-//
-import BaseContextProvider from 'src/context/BaseContextProvider'
 import EncryptionStore from 'src/data/EncryptionStore'
+import { runLogOut } from 'src/data/redux/slice/auth'
+import { AuthState } from 'src/data/redux/state.types'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import {
   MainStackParamList,
   TabNavigatorParamList,
 } from 'src/routes/navigation.type'
-import { UserProfile } from 'src/utils/shared-type'
 
 type ScreenProps = CompositeScreenProps<
   NativeStackScreenProps<TabNavigatorParamList, 'Profile'>,
@@ -46,14 +48,13 @@ type ScreenProps = CompositeScreenProps<
 
 const ProfileScreen: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
-
-  const [isModalVisible, setModalIsVisible] = useState(false)
+  const dispatch = useDispatch()
   const [Image1uri, setImage1uri] = useState(null)
   const [isLoading, setIsloading] = useState(false)
 
-  const { userData, setuserData } = useContext(BaseContextProvider)
+  const { userSession } = useSelector((state: AuthState) => state.auth)
 
-  const userProfile: UserProfile = userData
+  const userData = userSession
 
   const pickImageFromGalary = async () => {
     try {
@@ -73,7 +74,7 @@ const ProfileScreen: React.FC<ScreenProps> = ({ navigation }) => {
         status: 'error',
         base64: null,
         uri: null,
-        error: error,
+        error,
       }
 
       return response
@@ -295,7 +296,8 @@ const ProfileScreen: React.FC<ScreenProps> = ({ navigation }) => {
             image={
               Image1uri
                 ? Image1uri
-                : getDefaultImage(userData.profile.media) || undefined
+                : userSession?.profile &&
+                  getDefaultImage(userSession.profile.media)
             }
           />
 
@@ -366,8 +368,8 @@ const ProfileScreen: React.FC<ScreenProps> = ({ navigation }) => {
               <Image
                 source={bantusinlesIcon}
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: 80,
+                  height: 80,
                 }}
               />
             </View>
@@ -388,8 +390,9 @@ const ProfileScreen: React.FC<ScreenProps> = ({ navigation }) => {
               <Image
                 source={bantusinlesIcon}
                 style={{
-                  width: 40,
-                  height: 40,
+                  width: 80,
+                  height: 80,
+                  marginVertical: -12,
                 }}
               />
             </View>
@@ -409,7 +412,7 @@ const ProfileScreen: React.FC<ScreenProps> = ({ navigation }) => {
         <TouchableOpacity
           style={styles.logoutbutton}
           onPress={() => {
-            setuserData({})
+            dispatch(runLogOut())
             EncryptionStore.destroyUser()
           }}>
           <Text style={styles.logout}>Log Out</Text>
@@ -420,52 +423,3 @@ const ProfileScreen: React.FC<ScreenProps> = ({ navigation }) => {
 }
 
 export default ProfileScreen
-
-/* <Modal
-        visible={isModalVisible}
-        width={'95%'}
-        swipeThreshold={200} // default 100
-        onTouchOutside={() => {
-          setModalIsVisible(false)
-        }}>
-        <ModalContent>
-          <View style={styles.toplayout}>
-            <Whatshotbig />
-            <Text style={styles.modaldescription}>Are you sure?</Text>
-          </View>
-
-          <Text style={styles.modelcanceldisclaimer}>
-            Canceling your subscription instantly downgrades your experience to
-            the free plan and some features will be limited. You will not be
-            able to:
-          </Text>
-
-          <View style={styles.listitems}>
-            <CancelingItem
-              title={'Rewind to profiles you already rated'}
-              icon={<Rewind />}
-            />
-            <CancelingItem
-              title={'Chat with no limitations'}
-              icon={<Inclusive />}
-            />
-            <CancelingItem
-              title={'Enhance your profile’s privacy'}
-              icon={<Schedule />}
-            />
-            <CancelingItem
-              title={'Shine with more photos & videos'}
-              icon={<Inclusive />}
-            />
-            <CancelingItem
-              title={'Create better connections'}
-              icon={<Heart />}
-            />
-          </View>
-
-          <Button
-            onPress={() => setModalIsVisible(false)}
-            title="Confirm Cancellation"
-          />
-        </ModalContent>
-      </Modal> */

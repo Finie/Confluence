@@ -1,3 +1,8 @@
+/* eslint-disable react/no-unstable-nested-components */
+
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import React, { useContext, useRef, useState } from 'react'
 import {
   Animated,
@@ -10,7 +15,8 @@ import {
 } from 'react-native'
 import Image from 'react-native-fast-image'
 import { clamp } from 'rn-range-slider/helpers'
-import { convertDistance, isEmpty, updateBantuzUser } from 'src/helper'
+import { convertDistance, isEmpty } from 'src/helper'
+import utils from 'src/utils'
 
 import Hearts from 'src/assets/icons/buttonheart.svg'
 import CloseIcon from 'src/assets/icons/closeicon.svg'
@@ -95,7 +101,7 @@ const BantuzCardSwiper: React.FC<Props> = ({
       },
     ),
 
-    onPanResponderRelease: (e, { dx, vx, vy }) => {
+    onPanResponderRelease: (_e, { dx, vx, vy }) => {
       //handle what happens when the card has been released
       let velocity
 
@@ -422,9 +428,13 @@ const BantuzCardSwiper: React.FC<Props> = ({
                   {..._panHandlers}>
                   <AnimatedImageBackground
                     resizeMode={'cover'}
-                    source={{
-                      uri: `${item.thumbnail}`,
-                    }}
+                    source={
+                      item?.thumbnail
+                        ? {
+                            uri: `${item.thumbnail}`,
+                          }
+                        : require('src/assets/images/love_illustaration.png')
+                    }
                     style={[
                       styles.image_background,
                       background_image_animated,
@@ -476,7 +486,9 @@ const BantuzCardSwiper: React.FC<Props> = ({
                   <AnimatedImageBackground //original image
                     resizeMode={'cover'}
                     source={{
-                      uri: `${item.default_image}`,
+                      uri: item?.default_image
+                        ? `${item.default_image}`
+                        : `${utils.placeholderImage}`,
                     }}
                     style={[
                       styles.image_background,

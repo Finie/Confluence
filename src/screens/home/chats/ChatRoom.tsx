@@ -1,7 +1,11 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
+
 /* eslint-disable react-native/no-inline-styles */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 // import moment from 'moment'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Image,
   Keyboard,
@@ -15,6 +19,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { useSelector } from 'react-redux'
 import {
   checkRelativeTime,
   formatDate,
@@ -23,6 +28,7 @@ import {
   getUserMessageBubbleItem,
   sortItemsByIncreasingId,
 } from 'src/helper'
+import utils from 'src/utils'
 import { TextEncoder } from 'text-encoding'
 
 import chatRouter from 'src/api/routers/chatRouter'
@@ -30,7 +36,7 @@ import BackButton from 'src/assets/icons/backbutton.svg'
 import SendIcon from 'src/assets/icons/sendicon.svg'
 import Text from 'src/components/Text'
 import OverLayLoader from 'src/components/view/OverLayLoader'
-import BaseContextProvider from 'src/context/BaseContextProvider'
+import { AuthState } from 'src/data/redux/state.types'
 import useStompSocket from 'src/hooks/useStompSocket'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { MainStackParamList } from 'src/routes/navigation.type'
@@ -47,16 +53,24 @@ const ChatRoom: React.FC<ScreenProps> = ({ navigation, route }) => {
   const encoder = new TextEncoder()
 
   const encodedData = encoder.encode('some text')
+
+  console.log('====================================')
+  console.log('encodedData: ', encodedData)
+  console.log('====================================')
+
+  const { userSession } = useSelector((state: AuthState) => state.auth)
   // @ts-ignore
-  const { userData } = useContext(BaseContextProvider)
+  const userData = userSession
+
+  // @ts-ignore
   const userProfile: SavedProfile = userData
 
-  const getUsername = (): string | undefined => {
+  const getUsername = useCallback((): string | undefined => {
     if (from === 'MATCHES') {
       return request?.username
     }
     return chathead?.user.username
-  }
+  }, [chathead?.user.username, from, request?.username])
 
   const getFirstName = (): string | undefined => {
     if (from === 'MATCHES') {
@@ -72,10 +86,11 @@ const ChatRoom: React.FC<ScreenProps> = ({ navigation, route }) => {
     return chathead?.user.last_name
   }
 
-  const getLastModified = (): string | undefined => {
+  const getLastModified = (): string => {
     if (from === 'MATCHES') {
-      return request?.last_modified_on
+      return request?.last_modified_on ?? ''
     }
+    // @ts-ignore
     return chathead?.user.last_modified_on
   }
 
@@ -86,11 +101,17 @@ const ChatRoom: React.FC<ScreenProps> = ({ navigation, route }) => {
     return chathead?.user.default_image
   }
 
-  const [isFocused, setIsFocused] = useState<boolean>(false)
   const [messageText, setMessageText] = useState<string>('')
   const { connected, messages, error, sendMessage } = useStompSocket(
-    getUsername(),
+    getUsername(), //@ts-ignore
+    userSession?.token,
   )
+
+  useEffect(() => {
+    if (error) {
+      utils.showToastMessage(error, 'ERROR')
+    }
+  }, [error])
 
   const [messageTread, setMessageTread] = useState<Message[]>(messages)
 
@@ -130,8 +151,8 @@ const ChatRoom: React.FC<ScreenProps> = ({ navigation, route }) => {
         setMessageTread(sortItemsByIncreasingId(response.data.data))
         return
       }
-
-      return Alert.alert('Request failed', response.data.message)
+      // @ts-ignore
+      return utils.showToastMessage(`Failed: ${response.data.message}`, 'ERROR')
     }
 
     fetchChalog()

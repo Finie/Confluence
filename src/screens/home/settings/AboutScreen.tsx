@@ -1,13 +1,18 @@
+/* eslint-disable semi */
+
+/* eslint-disable import/order */
 import { useIsFocused } from '@react-navigation/native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useEffect, useState } from 'react'
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useDispatch } from 'react-redux'
 
 import homeRouter from 'src/api/routers/homeRouter'
 import EditAboutMe from 'src/components/EditAboutMe'
 import Screen from 'src/components/screen/Screen'
 import Text from 'src/components/Text'
 import BaseContextProvider from 'src/context/BaseContextProvider'
+import { runLoginUser } from 'src/data/redux/slice/auth'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { MainStackParamList } from 'src/routes/navigation.type'
 
@@ -25,6 +30,8 @@ const AboutScreen: React.FC<ScreenProps> = ({ navigation }) => {
   // @ts-ignore
   const { userData, setuserData } = React.useContext(BaseContextProvider)
 
+  const dispatch = useDispatch()
+
   useEffect(() => {
     const getCurrentUser = async () => {
       setIsLoading(true)
@@ -34,16 +41,18 @@ const AboutScreen: React.FC<ScreenProps> = ({ navigation }) => {
       if (response.ok) {
         // @ts-ignore
         const updatedData = updateBantuzUser(userData, response.data.data)
-        setuserData(updatedData)
-        return
+
+        console.log('====================================')
+        console.log('updatedData: ', updatedData)
+        console.log('====================================')
+        dispatch(runLoginUser(updatedData))
       }
-      return Alert.alert('Oops,', response.data.message)
     }
 
     if (isFocused) {
       getCurrentUser()
     }
-  }, [isFocused, setuserData, userData])
+  }, [dispatch, isFocused, setuserData, userData])
 
   const styles = StyleSheet.create({
     switchcontainer: {
@@ -91,7 +100,7 @@ const AboutScreen: React.FC<ScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       )}
-      {isEdit ? (
+      {isEdit && (
         <EditAboutMe
           onIsloading={(isloading: boolean) => {
             setIsLoading(isloading)
@@ -103,9 +112,9 @@ const AboutScreen: React.FC<ScreenProps> = ({ navigation }) => {
             setIsHeaderVisible(true)
           }}
         />
-      ) : (
-        <SettingsParallaxScreen />
       )}
+
+      {!isEdit && <SettingsParallaxScreen />}
     </Screen>
   )
 }

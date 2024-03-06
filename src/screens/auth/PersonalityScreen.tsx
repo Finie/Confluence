@@ -1,78 +1,56 @@
+/* eslint-disable semi */
+
+/* eslint-disable import/order */
+
+/* eslint-disable react-native/no-inline-styles */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import mime from 'mime'
 import React, { useState } from 'react'
 import {
-  Image,
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native'
-import { Image as Imagecompressor } from 'react-native-compressor'
-import RNFS from 'react-native-fs'
-import { launchImageLibrary } from 'react-native-image-picker'
+import { useDispatch } from 'react-redux'
 import { checkAndUpdateImageArray, isEmpty } from 'src/helper'
-import * as Yup from 'yup'
 
 import CameraActive from 'src/assets/icons/cameraactive.svg'
 import CloseSelected from 'src/assets/icons/closeimageselected.svg'
-import CameraInActive from 'src/assets/icons/imageactive.svg'
 import InactiveImage from 'src/assets/icons/inactiveImage.svg'
 import InactiveRecord from 'src/assets/icons/inactiveRecord.svg'
 import FabButton from 'src/components/FabButton'
 import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
+import { runAddRegistrationData } from 'src/data/redux/slice/auth'
 import useImagePicker from 'src/hooks/useImagePicker'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { AuthNavigatorParamList } from 'src/routes/navigation.type'
-import { UserProfile } from 'src/utils/shared-type'
 
 type ScreenProps = NativeStackScreenProps<
   AuthNavigatorParamList,
   'PersonalityScreen'
 >
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required().email().label('Email'),
-})
-
-const PersonalityScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
+const PersonalityScreen: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
-  const [ischecked, setisChecked] = useState(false)
   const [image1uri, setImage1uri] = useState('' as string | undefined | null)
   const [image2uri, setImage2uri] = useState('' as string | undefined | null)
   const [image3uri, setImage3uri] = useState('' as string | undefined | null)
   const [imageArray, setImageArray] = useState([] as any)
-  const [imageData, getPhoto] = useImagePicker()
+  const { imageData, getPhoto } = useImagePicker()
 
-  const UserInfo: UserProfile = route.params.data
+  const dispatch = useDispatch()
 
   const handleSumbit = () => {
-    const request = {
-      first_name: UserInfo.first_name,
-      email: UserInfo.email,
-      last_name: UserInfo.last_name,
-      password: UserInfo.password,
-      middle_name: UserInfo.middle_name,
-      phone: UserInfo.phone,
-      username: UserInfo.username,
-      profile: {
-        birth_date: UserInfo.profile.birth_date,
-        gender: UserInfo.profile.gender,
-        height: UserInfo.profile.height,
-        physical_frame: UserInfo.profile.physical_frame,
-        ethnicity: UserInfo.profile.ethnicity,
-        location: {
-          google_place_id: 'string',
-          name: 'string',
-          longitude: UserInfo.profile.location.longitude,
-          latitude: UserInfo.profile.location.latitude,
+    dispatch(
+      runAddRegistrationData({
+        dataType: '',
+        payload: {
+          medium: imageArray,
         },
-        media: imageArray,
-      },
-    }
-
-    navigation.navigate('InteretScreen', { data: request })
+      }),
+    )
+    navigation.navigate('InteretScreen')
   }
 
   const handleAddImageAtIndex = async (index: number) => {

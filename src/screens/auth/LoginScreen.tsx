@@ -1,6 +1,11 @@
+/* eslint-disable semi */
+
+/* eslint-disable import/order */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useContext, useState } from 'react'
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useDispatch } from 'react-redux'
+import utils from 'src/utils'
 import * as Yup from 'yup'
 
 import authRoute from 'src/api/routers/authRoute'
@@ -12,6 +17,7 @@ import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
 import BaseContextProvider from 'src/context/BaseContextProvider'
 import EncryptionStore from 'src/data/EncryptionStore'
+import { authorize, runLoginUser } from 'src/data/redux/slice/auth'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { AuthNavigatorParamList } from 'src/routes/navigation.type'
 
@@ -25,11 +31,13 @@ type ScreenProps = NativeStackScreenProps<AuthNavigatorParamList, 'Login'>
 const LoginScreen: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
 
+  const dispatch = useDispatch()
+
   const [rememberMe, setrememberMe] = useState(true)
 
   const [isLoading, setIsloading] = useState(false)
 
-  const { setuserData, setUserToken } = useContext(BaseContextProvider)
+  // const { setuserData, setUserToken } = useContext(BaseContextProvider)
 
   const handleRemember = () => setrememberMe(!rememberMe)
 
@@ -42,15 +50,38 @@ const LoginScreen: React.FC<ScreenProps> = ({ navigation }) => {
     const response = await authRoute.loginUser(request)
     setIsloading(false)
 
-    if (response.ok) {
+    if (
+      response.ok &&
+      response.data && //@ts-ignore
+      response.data.data && //@ts-ignore
+      response.data.data.token
+    ) {
+      //@ts-ignore
       EncryptionStore.storeToken(response.data.data.token)
+      //@ts-ignore
       EncryptionStore.storeBantuUser(response.data.data)
-      setUserToken(response.data.data.token)
-      setuserData(response.data.data)
-      return
-    }
 
-    Alert.alert('Request Failed', response.data.message)
+      //@ts-ignore
+      dispatch(runLoginUser(response.data.data))
+      // setUserToken(response.data.data.token)
+      //@ts-ignore
+      // setuserData(response.data.data)
+    } else {
+      return utils.showToastMessage(
+        `Error: ${
+          //@ts-ignore
+          response.data?.message ||
+          //@ts-ignore
+          (response.data?.details[0] &&
+            //@ts-ignore
+            response.data?.details[0]?.errorMessage) ||
+          //@ts-ignore
+          response.data?.details[0] ||
+          'Unknown Error occured'
+        }`,
+        'ERROR',
+      )
+    }
   }
 
   const styles = StyleSheet.create({

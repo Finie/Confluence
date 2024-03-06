@@ -66,7 +66,10 @@ const useImagePicker = () => {
     }
   }
 
-  return [imageData, getPhoto]
+  return {
+    imageData,
+    getPhoto,
+  }
 }
 
 export default useImagePicker

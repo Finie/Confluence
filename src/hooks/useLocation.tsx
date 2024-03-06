@@ -1,55 +1,160 @@
-import Geolocation from '@react-native-community/geolocation'
-import { useEffect, useState } from 'react'
-import { PermissionsAndroid, Platform } from 'react-native'
+/* eslint-disable import/order */
 
-import { Location } from 'src/utils/shared-type'
+/* eslint-disable semi */
+import Geolocation, {
+  GeolocationResponse,
+} from '@react-native-community/geolocation'
+import { useCallback, useEffect, useState } from 'react'
+import { Platform } from 'react-native'
+import {
+  checkMultiple,
+  openSettings,
+  PERMISSIONS,
+  PermissionStatus,
+  requestMultiple,
+} from 'react-native-permissions'
+import utils from 'src/utils'
 
 const useLocation = () => {
-  const [location, setLocation] = useState<Location | null | undefined>()
+  const [location, setLocation] = useState<GeolocationResponse>()
+
+  const getLocation = useCallback(() => {
+    Geolocation.getCurrentPosition(
+      (position: GeolocationResponse) => {
+        console.log('=======GeolocationResponse==========')
+        console.log('position: ', position)
+        console.log('====================================')
+        setLocation(position)
+      },
+      error => {
+        utils.showToastMessage(`Error reading location [${error}]`, 'WARNING')
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 10000,
+      },
+    )
+  }, [])
+
+  const requestAuthorization = useCallback(async () => {
+    await Geolocation.requestAuthorization()
+    getLocation()
+  }, [getLocation])
+
+  const requestLocationPermission = useCallback(() => {
+    requestMultiple(
+      Platform.OS === 'android'
+        ? [
+            PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+            PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+          ]
+        : [
+            PERMISSIONS.IOS.LOCATION_ALWAYS,
+            PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+          ],
+    )
+      .then(response => {
+        const granted: PermissionStatus =
+          Platform.OS === 'android'
+            ? response['android.permission.ACCESS_COARSE_LOCATION'] ||
+              response['android.permission.ACCESS_FINE_LOCATION']
+            : response['ios.permission.LOCATION_ALWAYS'] ||
+              response['ios.permission.LOCATION_WHEN_IN_USE']
+
+        switch (granted) {
+          case 'granted':
+            requestAuthorization()
+            break
+
+          case 'denied':
+            requestLocationPermission()
+            break
+
+          case 'unavailable':
+            utils.showToastMessage(
+              'This feature is not available on your deveice',
+              'WARNING',
+            )
+            break
+
+          default:
+            // otherwise the permissions are blocked
+            openSettings().catch(error =>
+              utils.showToastMessage(`Permission Error ${error}`, 'WARNING'),
+            )
+            break
+        }
+      })
+      .catch((error: any) => {
+        utils.showToastMessage(`Permission Error: ${error}`, 'WARNING')
+      })
+  }, [requestAuthorization])
 
   useEffect(() => {
-    const requestLocationPermission = async () => {
+    const checkPermissionRequest = async () => {
       try {
-        if (Platform.OS === 'android') {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Location Permission',
-              message: 'This app needs access to your location',
-              buttonNeutral: 'Ask Me Later',
-              buttonNegative: 'Cancel',
-              buttonPositive: 'OK',
-            },
-          )
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            getLocation()
-          }
-        } else {
-          getLocation()
-        }
+        checkMultiple(
+          Platform.OS === 'android'
+            ? [
+                PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+                PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+              ]
+            : [
+                PERMISSIONS.IOS.LOCATION_ALWAYS,
+                PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+              ],
+        )
+          .then(response => {
+            const granted: PermissionStatus =
+              Platform.OS === 'android'
+                ? response['android.permission.ACCESS_COARSE_LOCATION'] ||
+                  response['android.permission.ACCESS_FINE_LOCATION']
+                : response['ios.permission.LOCATION_ALWAYS'] ||
+                  response['ios.permission.LOCATION_WHEN_IN_USE']
+
+            switch (granted) {
+              case 'granted':
+                requestAuthorization()
+                break
+
+              case 'denied':
+                requestLocationPermission()
+                break
+
+              case 'limited':
+                requestLocationPermission()
+                break
+
+              case 'unavailable':
+                utils.showToastMessage(
+                  'This feature is not available on your deveice',
+                  'WARNING',
+                )
+                break
+
+              default:
+                // otherwise the permissions are blocked
+                openSettings().catch(error =>
+                  utils.showToastMessage(
+                    `Permission Error ${error}`,
+                    'WARNING',
+                  ),
+                )
+                break
+            }
+          })
+          .catch((error: any) => {
+            utils.showToastMessage(`Permission Error ${error}`, 'WARNING')
+          })
       } catch (err) {
         console.warn(err)
       }
     }
+    checkPermissionRequest()
+  }, [requestAuthorization, requestLocationPermission])
 
-    const getLocation = () => {
-      Geolocation.getCurrentPosition(
-        position => {
-          setLocation(position.coords)
-        },
-        error => {
-          console.warn(error.code, error.message)
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-      )
-    }
-
-    requestLocationPermission()
-
-    return () => Geolocation.stopObserving()
-  }, [])
-
-  return location
+  return { location }
 }
 
 export default useLocation

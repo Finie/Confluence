@@ -1,36 +1,39 @@
+/* eslint-disable semi */
+
+/* eslint-disable import/order */
 import apiClient from '../client/apiClient'
-import { UserProfile } from 'src/utils/shared-type'
+import { RegistrationData } from 'src/utils/global.types'
 
 const getEthnicGroups = () => {
-  return apiClient.get(`/api/app/profile/ethnic-group/`)
+  return apiClient.fetchRequest('/api/app/profile/ethnic-group/')
 }
 
 const getListOfethnicGroups = (id: number) => {
-  return apiClient.get(`/api/app/profile/ethnicity/${id}`)
+  return apiClient.fetchRequest(`/api/app/profile/ethnicity/${id}`)
 }
 
 const fetchOtherPersions = () => {
-  return apiClient.get(`/api/app/profile/other`)
+  return apiClient.fetchRequest('/api/app/profile/other')
 }
 
 const fetchPassions = () => {
-  return apiClient.get(`/api/app/profile/passion`)
+  return apiClient.fetchRequest('/api/app/profile/passion')
 }
 
 const fetchLanguages = () => {
-  return apiClient.get(`/api/app/profile/language`)
+  return apiClient.fetchRequest('/api/app/profile/language')
 }
 
-const createUser = (data: UserProfile) => {
-  return apiClient.post(`/auth/register`, data)
+const createUser = (data: RegistrationData) => {
+  return apiClient.postRequest('/auth/register', data)
 }
 
 const loginUser = (data: { username: string; password: string }) => {
-  return apiClient.post(`/auth/login`, data)
+  return apiClient.postRequest('/auth/login', data)
 }
 
 const updatePassword = (data: { username: string }) => {
-  return apiClient.put(`/auth/forgot-password`, data)
+  return apiClient.updateRequest('/auth/forgot-password', data)
 }
 
 const createNewPassword = (data: {
@@ -38,7 +41,7 @@ const createNewPassword = (data: {
   reset_token: string
   password: string
 }) => {
-  return apiClient.put(`/auth/reset-password`, data)
+  return apiClient.updateRequest('/auth/reset-password', data)
 }
 
 const updateUserdata = () => {
@@ -46,23 +49,23 @@ const updateUserdata = () => {
 }
 
 const checkEmailAvailability = (username: string) => {
-  return apiClient.get(`/auth/validate-email?email=${username}`)
+  return apiClient.fetchRequest(`/auth/validate-email?email=${username}`)
 }
 
 const checkNameAvailability = (username: string) => {
-  return apiClient.get(`/auth/validate-username?username=${username}`)
+  return apiClient.fetchRequest(`/auth/validate-username?username=${username}`)
 }
 
 const checkPhoneAvailability = (username: string) => {
-  return apiClient.get(`/auth/validate-phone?phone=${username}`)
+  return apiClient.fetchRequest(`/auth/validate-phone?phone=${username}`)
 }
 
 const notificationTokenPost = (data: { token: string | null }) => {
-  return apiClient.post('/api/user/me/firebase-message-token', data)
+  return apiClient.postRequest('/api/user/me/firebase-message-token', data)
 }
 
 const validateResetPasswordToken = (data: any) => {
-  return apiClient.post('auth/validate-token', data)
+  return apiClient.postRequest('auth/validate-token', data)
 }
 
 export default {

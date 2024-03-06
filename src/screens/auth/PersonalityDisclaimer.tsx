@@ -1,3 +1,6 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
@@ -14,10 +17,7 @@ type ScreenProps = NativeStackScreenProps<
   'PersonalityDisclaimer'
 >
 
-const PersonalityDisclaimer: React.FC<ScreenProps> = ({
-  navigation,
-  route,
-}) => {
+const PersonalityDisclaimer: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
   const styles = StyleSheet.create({
     centercontainer: {
@@ -76,9 +76,7 @@ const PersonalityDisclaimer: React.FC<ScreenProps> = ({
       <View style={styles.bottomview}>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('PersonalityScreen', {
-              data: route.params.data,
-            })
+            navigation.navigate('PersonalityScreen')
           }}
           style={styles.bottombutton}>
           <ArrowIcon />

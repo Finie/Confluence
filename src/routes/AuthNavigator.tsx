@@ -1,8 +1,8 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { createStackNavigator } from '@react-navigation/stack'
-import React from 'react'
-import { Text, View } from 'react-native'
+import React, { useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
+import { AuthState } from 'src/data/redux/state.types'
 import BasicDisclaimer from 'src/screens/auth/BasicDisclaimer'
 import BirthDayAge from 'src/screens/auth/BirthDayAge'
 import BodyAndFrame from 'src/screens/auth/BodyAndFrame'

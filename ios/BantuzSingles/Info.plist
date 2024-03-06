@@ -44,7 +44,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>location allows the user to find nearby matches</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Program requires GPS to track cars and job orders</string>
+	<string>Location allows the user to find nearby matches and better app expirience</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Photo access is required to update your profile</string>
 	<key>NSPhotoLibraryUsageDescription</key>

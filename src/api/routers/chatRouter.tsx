@@ -1,11 +1,11 @@
 import apiClient from '../client/apiClient'
 
 const getMessageChatRooms = () => {
-  return apiClient.get('/api/conversation?page=1&pageSize=100')
+  return apiClient.fetchRequest('/api/conversation?page=1&pageSize=100')
 }
 
 const markMessageAsRead = (username: string | undefined) => {
-  return apiClient.post(`/api/conversation/open/${username}`)
+  return apiClient.postRequest(`/api/conversation/open/${username}`)
 }
 
 const getIndividualMessages = (
@@ -13,7 +13,7 @@ const getIndividualMessages = (
   page: number,
   pageSize: number,
 ) => {
-  return apiClient.get(
+  return apiClient.fetchRequest(
     `/api/message?username=${username}&page=${page}&pageSize=${pageSize}`,
   )
 }

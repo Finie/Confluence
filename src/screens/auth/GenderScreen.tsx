@@ -1,21 +1,21 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useDispatch } from 'react-redux'
 import * as Yup from 'yup'
 
 import ReadioChecked from 'src/assets/icons/radiochecked.svg'
 import UncheckedRadio from 'src/assets/icons/radioempty.svg'
 import FabButton from 'src/components/FabButton'
 import AppForm from 'src/components/forms/AppForm'
-import FabSubmit from 'src/components/forms/FabSubmit'
 import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
+import { runAddRegistrationData } from 'src/data/redux/slice/auth'
 import useThemeStyles from 'src/hooks/useThemeStyles'
-import {
-  AuthNavigatorParamList,
-  MainStackParamList,
-} from 'src/routes/navigation.type'
-import { UserProfile } from 'src/utils/shared-type'
+import { AuthNavigatorParamList } from 'src/routes/navigation.type'
 
 type ScreenProps = NativeStackScreenProps<
   AuthNavigatorParamList,
@@ -27,28 +27,21 @@ const validationSchema = Yup.object().shape({
   lastName: Yup.string().required().label('Last name'),
 })
 
-const GenderScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
+const GenderScreen: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
   const [gender, setgender] = useState('Male')
-
-  const UserInfo: UserProfile = route.params.data
+  const dispatch = useDispatch()
 
   const handleSumbit = () => {
-    const request = {
-      first_name: UserInfo.first_name,
-      email: UserInfo.email,
-      last_name: UserInfo.last_name,
-      password: UserInfo.password,
-      middle_name: UserInfo.middle_name,
-      phone: UserInfo.phone,
-      username: UserInfo.username,
-      profile: {
-        birth_date: UserInfo.profile.birth_date,
-        gender: gender.toUpperCase(),
-      },
-    }
-
-    navigation.navigate('BodyAndFrame', { data: request })
+    dispatch(
+      runAddRegistrationData({
+        dataType: 'GENDER',
+        payload: {
+          gender: gender.toUpperCase(),
+        },
+      }),
+    )
+    navigation.navigate('BodyAndFrame')
   }
 
   const handleMale = () => setgender('Male')

@@ -1,7 +1,11 @@
+/* eslint-disable semi */
+
+/* eslint-disable import/order */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import React, { useContext, useState } from 'react'
-import { Alert, StyleSheet, View } from 'react-native'
-import Toast from 'react-native-toast-message'
+import React, { useState } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { useDispatch } from 'react-redux'
+import utils from 'src/utils'
 import * as Yup from 'yup'
 
 import authRoute from 'src/api/routers/authRoute'
@@ -10,6 +14,7 @@ import AppFormInput from 'src/components/forms/AppFormInput'
 import FabSubmit from 'src/components/forms/FabSubmit'
 import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
+import { runAddRegistrationData } from 'src/data/redux/slice/auth'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { AuthNavigatorParamList } from 'src/routes/navigation.type'
 
@@ -28,6 +33,8 @@ const validationSchema = Yup.object().shape({
 const HowToCallYou: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
 
+  const dispatch = useDispatch()
+
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSumbit = async (data: {
@@ -36,38 +43,35 @@ const HowToCallYou: React.FC<ScreenProps> = ({ navigation }) => {
     userName: string
     phone: string
   }) => {
-    const request = {
-      first_name: data.firstName,
-      last_name: data.lastName,
-      middle_name: data.lastName,
-      phone: data.phone,
-      username: data.userName,
-    }
+    dispatch(
+      runAddRegistrationData({
+        dataType: 'NAME',
+        payload: {
+          first_name: data.firstName,
+          last_name: data.lastName,
+          username: data.userName,
+          phone: data.phone,
+        },
+      }),
+    )
 
     setIsLoading(true)
     const nameResponse = await authRoute.checkNameAvailability(data.userName)
-    const phoneResponse = await authRoute.checkNameAvailability(data.phone)
-    setIsLoading(false)
 
-    if (nameResponse.ok && phoneResponse.ok) {
-      if (nameResponse.data.data && phoneResponse.data.data) {
-        navigation.navigate('EmailPassword', { data: request })
-        return
+    //@ts-ignore
+    if (nameResponse.ok && nameResponse.data && nameResponse.data.data) {
+      const phoneResponse = await authRoute.checkPhoneAvailability(data.phone)
+      setIsLoading(false)
+      //@ts-ignore
+      if (phoneResponse.ok && phoneResponse.data && phoneResponse.data.data) {
+        navigation.navigate('EmailPassword')
+      } else {
+        setIsLoading(false)
+        utils.showToastMessage('Error: Phone number taken', 'ERROR')
       }
-
-      return Alert.alert(
-        'Request failed',
-        !nameResponse.data.data
-          ? 'Username ' + 'is already in use'
-          : !phoneResponse.data.data
-          ? 'Phone number ' + 'is already in use'
-          : '',
-      )
     } else {
-      return Alert.alert(
-        'Request failed',
-        nameResponse?.data?.message || phoneResponse?.data?.message,
-      )
+      setIsLoading(false)
+      utils.showToastMessage('Error: username taken ', 'ERROR')
     }
   }
 
@@ -112,6 +116,7 @@ const HowToCallYou: React.FC<ScreenProps> = ({ navigation }) => {
           phone: '',
         }}
         validationSchema={validationSchema}
+        //@ts-ignore
         onSubmit={values => handleSumbit(values)}>
         <View style={styles.container}>
           <Text style={styles.howtwxt}>How should we call you?</Text>
@@ -122,6 +127,7 @@ const HowToCallYou: React.FC<ScreenProps> = ({ navigation }) => {
           <AppFormInput
             name={'phone'}
             placeholder={'Phone number'}
+            //@ts-ignore
             keyboardType={'decimal-pad'}
           />
           <Text style={styles.sharetext}>

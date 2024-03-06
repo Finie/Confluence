@@ -1,68 +1,55 @@
+/* eslint-disable import/order */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import LottieView from 'lottie-react-native'
 import React, { useEffect, useState } from 'react'
-import { Alert, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+import { useDispatch } from 'react-redux'
 import { isEmpty } from 'src/helper'
-import * as Yup from 'yup'
+import utils from 'src/utils'
 
 import authRoute from 'src/api/routers/authRoute'
 import FabButton from 'src/components/FabButton'
 import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
 import MyAccordionList from 'src/components/view/customs/MyAccordionList'
+import { runAddRegistrationData } from 'src/data/redux/slice/auth'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { AuthNavigatorParamList } from 'src/routes/navigation.type'
-import { EthnicGroupItem, UserProfile } from 'src/utils/shared-type'
+import { EthnicGroupItem } from 'src/utils/shared-type'
 
 type ScreenProps = NativeStackScreenProps<
   AuthNavigatorParamList,
   'EthnicityScreen'
 >
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required().email().label('Email'),
-})
-
-const EthnicityScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
+const EthnicityScreen: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
-  const [ischecked, setisChecked] = useState(false)
-  const [selectedIndex, setselectedIndex] = useState(3)
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState<EthnicGroupItem[]>([])
   const [tribe, setTribe] = useState('')
   const [isError, setIsError] = useState(false)
 
-  const UserInfo: UserProfile = route.params.data
+  const dispatch = useDispatch()
 
   const handleSumbit = () => {
     if (isEmpty(tribe)) {
+      utils.showToastMessage('Please select a group', 'WARNING')
       setIsError(true)
       return
     }
 
     setIsError(false)
 
-    const request = {
-      first_name: UserInfo.first_name,
-      email: UserInfo.email,
-      last_name: UserInfo.last_name,
-      password: UserInfo.password,
-      middle_name: UserInfo.middle_name,
-      phone: UserInfo.phone,
-      username: UserInfo.username,
-      profile: {
-        birth_date: UserInfo.profile.birth_date,
-        gender: UserInfo.profile.gender,
-        height: UserInfo.profile.height,
-        physical_frame: UserInfo.profile.physical_frame,
-        ethnicity: tribe,
-      },
-    }
+    dispatch(
+      runAddRegistrationData({
+        dataType: 'ETHNICITY',
+        payload: {
+          ethnicity: tribe,
+        },
+      }),
+    )
 
-    navigation.navigate('LocationTracker', { data: request })
+    navigation.navigate('LocationTracker')
   }
-
-  const handleSwitch = () => setisChecked(!ischecked)
 
   const fetchEthnicGroups = async () => {
     setIsLoading(true)
@@ -70,15 +57,24 @@ const EthnicityScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
     setIsLoading(false)
 
     if (response.ok) {
-      if (!isEmpty(response.data.data)) {
+      //@ts-ignore
+      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+      if (response && response.data && response.data.data) {
+        //@ts-ignore
         setData(response.data.data)
-        return
       }
-
-      return
+    } else {
+      utils.showToastMessage(
+        `Failed: ${
+          //@ts-ignore
+          // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+          (response && response.data && response.data?.message) ||
+          //@ts-ignore
+          response.data?.details
+        }`,
+        'ERROR',
+      )
     }
-
-    return Alert.alert('Request failed', response.data.message)
   }
 
   useEffect(() => {
@@ -88,9 +84,6 @@ const EthnicityScreen: React.FC<ScreenProps> = ({ navigation, route }) => {
   const handleOnTribeSelected = (tribeName: string) => {
     setIsError(false)
     setTribe(tribeName)
-    console.log('==============handleOnTribeSelected======================')
-    console.log(tribe)
-    console.log('====================================')
   }
 
   const styles = StyleSheet.create({

@@ -73,9 +73,7 @@ const BasicDisclaimer: React.FC<ScreenProps> = ({ navigation, route }) => {
 
       <View style={styles.bottomview}>
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('GenderScreen', { data: route.params.data })
-          }
+          onPress={() => navigation.navigate('GenderScreen')}
           style={styles.bottombutton}>
           <ArrowIcon />
         </TouchableOpacity>

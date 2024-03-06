@@ -1,17 +1,22 @@
+/* eslint-disable semi */
+
+/* eslint-disable import/order */
 import apiClient from '../client/apiClient'
 import { SearchGlag } from 'src/utils/shared-type'
 
 const findMyMatches = (data: { page: number; pagesize: number }) => {
-  return apiClient.get(`/api/match?page=${data.page}&pageSize=${data.pagesize}`)
+  return apiClient.fetchRequest(
+    `/api/match?page=${data.page}&pageSize=${data.pagesize}`,
+  )
 }
 const getCurrentAccounts = () => {
-  return apiClient.get('/api/user/me')
+  return apiClient.fetchRequest('/api/user/me')
 }
 const exploreMatches = (data: SearchGlag) => {
-  return apiClient.post('/api/user/explore', data)
+  return apiClient.postRequest('/api/user/explore', data)
 }
 const postaMatchedUser = (data: { username: string; status: string }) => {
-  return apiClient.post('/api/swipe', data)
+  return apiClient.postRequest('/api/swipe', data)
 }
 const searchUsersByFlags = (data: {
   minAge: number
@@ -25,7 +30,7 @@ const searchUsersByFlags = (data: {
   page: number
   pageSize: number
 }) => {
-  return apiClient.get(
+  return apiClient.fetchRequest(
     `/api/user/explore?myLatitude=${data.latitude}&myLongitude=${data.longitude}&ageRange=${data.minAge}-${data.maxAge}&distanceRange=${data.minDistane}-${data.maxDistance}${data.passion}${data.other}&page=${data.page}&pageSize=${data.pageSize}`,
   )
 }
@@ -37,29 +42,29 @@ const updateProfilePic = (
     is_default: boolean
   }[],
 ) => {
-  return apiClient.post('/api/user/media', data)
+  return apiClient.postRequest('/api/user/media', data)
 }
 const getExploreTypes = () => {
-  return apiClient.get('/api/app/profile/passion-stats')
+  return apiClient.fetchRequest('/api/app/profile/passion-stats')
 }
 const searchForUsersByFlags = (data: SearchGlag) => {
-  return apiClient.post('/api/user/explore', data)
+  return apiClient.postRequest('/api/user/explore', data)
 }
 
 const getBlockedUsers = () => {
-  return apiClient.get('/api/swipe?page=1&pageSize=100&status=BLOCK')
+  return apiClient.fetchRequest('/api/swipe?page=1&pageSize=100&status=BLOCK')
 }
 
 const reportUser = (data: any) => {
-  return apiClient.post('/api/report-user', data)
+  return apiClient.postRequest('/api/report-user', data)
 }
 
 const unblockUsers = (data: { username: string; status: 'LIKE' | 'BLOCK' }) => {
-  return apiClient.put('/api/match/status', data)
+  return apiClient.updateRequest('/api/match/status', data)
 }
 
 const getSelectedUserDetails = (userId: string) => {
-  return apiClient.get(`/api/user/${userId}`)
+  return apiClient.fetchRequest(`/api/user/${userId}`)
 }
 
 export default {

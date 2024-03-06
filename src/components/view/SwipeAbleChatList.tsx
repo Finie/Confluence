@@ -1,10 +1,15 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
+
 /* eslint-disable react-native/no-inline-styles */
 import moment from 'moment'
-import React, { useRef } from 'react'
+import React from 'react'
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
-import { getAccroNames, isEmpty } from 'src/helper'
+import { getAccroNames } from 'src/helper'
 
+import chatRouter from 'src/api/routers/chatRouter'
 import LeftSwipeIcon from 'src/assets/icons/leftswipeicon.svg'
 import RightSwipable from 'src/assets/icons/rightswipable.svg'
 import useThemeStyles from 'src/hooks/useThemeStyles'
@@ -20,13 +25,10 @@ type Props = {
 
 const SwipeableChatList: React.FC<Props> = ({ data, index, onClick }) => {
   const { colors } = useThemeStyles()
-  console.log('====================================')
-  console.log(data)
-  console.log('====================================')
 
-  let row: Array<any> = []
+  const row: any[] = []
 
-  const onRenderLeftAction = (progress, dragX, onClick) => {
+  const onRenderLeftAction = (_progress: any, _dragX: any, _onClick: any) => {
     return (
       <TouchableOpacity style={styles.leftswipe}>
         <LeftSwipeIcon />
@@ -34,12 +36,22 @@ const SwipeableChatList: React.FC<Props> = ({ data, index, onClick }) => {
     )
   }
 
-  const renderRightActions = (progress, dragX, onClick) => {
+  const renderRightActions = (_progress: any, _dragX: any, _onClick: any) => {
     return (
       <TouchableOpacity style={styles.rightswipable}>
         <RightSwipable />
       </TouchableOpacity>
     )
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const closeRow = async (index: number) => {
+    console.log('====================================')
+    console.log('data: ', data)
+    console.log('index: ', index)
+    console.log('====================================')
+
+    const response = await chatRouter.markMessageAsRead(data.user.username)
   }
 
   const styles = StyleSheet.create({
@@ -121,6 +133,7 @@ const SwipeableChatList: React.FC<Props> = ({ data, index, onClick }) => {
   })
   return (
     <Swipeable
+      //@ts-ignore
       renderLeftActions={onRenderLeftAction}
       renderRightActions={renderRightActions}
       onSwipeableOpen={() => closeRow(index)}
@@ -155,10 +168,15 @@ const SwipeableChatList: React.FC<Props> = ({ data, index, onClick }) => {
           )}
         </View>
         <View style={styles.centercontainer}>
-          <Text numberOfLines={1} style={styles.name}>
+          <Text
+            //@ts-ignore
+            numberOfLines={1}
+            style={styles.name}>
             {`${data.user.first_name}`}
           </Text>
-          <Text numberOfLines={1} style={styles.message}>
+          <Text //@ts-ignore
+            numberOfLines={1}
+            style={styles.message}>
             {`@${data.user.username}`}
           </Text>
         </View>
@@ -166,14 +184,21 @@ const SwipeableChatList: React.FC<Props> = ({ data, index, onClick }) => {
           <View style={styles.timewraper}>
             {data.unread_count > 0 && (
               <View style={styles.numberholder}>
-                <Text numberOfLines={1} style={styles.numberofunred}>
+                <Text
+                  //@ts-ignore
+                  numberOfLines={1}
+                  style={styles.numberofunred}>
                   {data.unread_count}
                 </Text>
               </View>
             )}
 
-            <Text numberOfLines={1} style={styles.time}>
-              {moment(data.user.last_modified_on).format('HH:mm')}
+            <Text
+              //@ts-ignore
+              numberOfLines={1}
+              style={styles.time}>
+              {/* @ts-ignore */}
+              {moment(data.user.last_modified_on).format('MMM hh:mm')}
             </Text>
           </View>
         </View>

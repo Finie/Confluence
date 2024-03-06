@@ -1,72 +1,50 @@
-import { NavigationContainer } from '@react-navigation/native'
+/* eslint-disable react/no-unstable-nested-components */
+
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import AnimatedLottieView from 'lottie-react-native'
-import React, { useEffect, useState } from 'react'
-import {
-  Linking,
-  PermissionsAndroid,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native'
-import Modal, { ModalContent } from 'react-native-modals'
-import { isEmpty } from 'src/helper'
+import React from 'react'
+import { Linking, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useDispatch } from 'react-redux'
 
 import Location from 'src/assets/icons/location.svg'
 import FabButton from 'src/components/FabButton'
 import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
+import { runAddRegistrationData } from 'src/data/redux/slice/auth'
 import useLocation from 'src/hooks/useLocation'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { AuthNavigatorParamList } from 'src/routes/navigation.type'
-import { UserProfile } from 'src/utils/shared-type'
 
 type ScreenProps = NativeStackScreenProps<
   AuthNavigatorParamList,
   'LocationTracker'
 >
 
-const LocationTracking: React.FC<ScreenProps> = ({ navigation, route }) => {
+const LocationTracking: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
-  const [locationIsGranted, setLocationIsGranted] = useState(false)
-  const [currentLongitude, setCurrentLongitude] = useState(0)
-  const [currentLatitude, setCurrentLatitude] = useState(0)
-  const [locationStatus, setLocationStatus] = useState('')
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const location = useLocation()
+  const { location } = useLocation()
 
-  const UserInfo: UserProfile = route.params.data
+  const dispatch = useDispatch()
 
   const handleEnablePermissionClickEvent = () => {
     Linking.openSettings()
   }
 
   const handleSumbit = () => {
-    const request = {
-      first_name: UserInfo.first_name,
-      email: UserInfo.email,
-      last_name: UserInfo.last_name,
-      password: UserInfo.password,
-      middle_name: UserInfo.middle_name,
-      phone: UserInfo.phone,
-      username: UserInfo.username,
-      profile: {
-        birth_date: UserInfo.profile.birth_date,
-        gender: UserInfo.profile.gender,
-        height: UserInfo.profile.height,
-        physical_frame: UserInfo.profile.physical_frame,
-        ethnicity: UserInfo.profile.ethnicity,
-        location: {
-          google_place_id: 'string',
+    dispatch(
+      runAddRegistrationData({
+        dataType: 'LOCATION',
+        payload: {
+          google_place_id: location?.coords.heading ?? '',
           name: '',
-          longitude: `${location?.longitude || 0}`,
-          latitude: `${location?.latitude || 0}`,
+          longitude: `${location?.coords.longitude ?? ''}`,
+          latitude: `${location?.coords.latitude ?? ''}`,
         },
-      },
-    }
-
-    navigation.navigate('PersonalityDisclaimer', { data: request })
+      }),
+    )
+    navigation.navigate('PersonalityDisclaimer')
   }
 
   const styles = StyleSheet.create({
@@ -154,7 +132,7 @@ const LocationTracking: React.FC<ScreenProps> = ({ navigation, route }) => {
           <Location />
           <Text style={styles.texts}>Enable Location Tracking</Text>
         </TouchableOpacity>
-        <View style={styles.helperview}></View>
+        <View style={styles.helperview} />
       </View>
 
       <Text style={styles.discalimertext}>
@@ -173,27 +151,22 @@ const LocationTracking: React.FC<ScreenProps> = ({ navigation, route }) => {
       <View style={styles.main}>
         <View style={styles.container}>
           <Text style={styles.howtwxt}>Meet people nearby & far away</Text>
+          {/* { */}
 
-          {!isEmpty(location) ? (
-            location.permissionStatus === 'granted' &&
-            location.latitude !== 0 ? (
-              <View style={styles.accordion}>
-                <View style={styles.mainb}>
-                  <Text style={styles.discalimertext}>
-                    Based on your location, you are currently in
-                  </Text>
-                </View>
-
-                <Text style={styles.location_name}>{location.placeName}</Text>
+          {location && //@ts-ignore
+          location.coords.latitude === 0 ? (
+            <View style={styles.accordion}>
+              <View style={styles.mainb}>
+                <Text style={styles.discalimertext}>
+                  Based on your location, you are currently in
+                </Text>
               </View>
-            ) : (
-              <RenderEnableButton />
-            )
+              {/* @ts-ignore */}
+              <Text style={styles.location_name}>{location.placeName}</Text>
+            </View>
           ) : (
             <RenderEnableButton />
           )}
-
-          {/* //xa */}
         </View>
 
         <View style={styles.bottomcontainer}>

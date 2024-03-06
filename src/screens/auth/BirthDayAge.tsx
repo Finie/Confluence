@@ -1,8 +1,13 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import moment from 'moment'
+import moment, { MomentInput } from 'moment'
 import React, { useState } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+import { useDispatch } from 'react-redux'
 import { getTheMinimumSelectableYear } from 'src/helper'
+import utils from 'src/utils'
 import * as Yup from 'yup'
 
 import AppForm from 'src/components/forms/AppForm'
@@ -10,9 +15,9 @@ import AppFormDatePicker from 'src/components/forms/AppFormDatePicker'
 import FabSubmit from 'src/components/forms/FabSubmit'
 import AuthScreen from 'src/components/screen/AuthScreen'
 import Text from 'src/components/Text'
+import { runAddRegistrationData } from 'src/data/redux/slice/auth'
 import useThemeStyles from 'src/hooks/useThemeStyles'
 import { AuthNavigatorParamList } from 'src/routes/navigation.type'
-import { UserProfile } from 'src/utils/shared-type'
 
 type ScreenProps = NativeStackScreenProps<AuthNavigatorParamList, 'BirthDayAge'>
 
@@ -20,46 +25,34 @@ const validationSchema = Yup.object().shape({
   birth_date: Yup.string().label('Birthday'),
 })
 
-const BirthDayAge: React.FC<ScreenProps> = ({ navigation, route }) => {
+const BirthDayAge: React.FC<ScreenProps> = ({ navigation }) => {
   const { colors } = useThemeStyles()
 
-  const [ischecked, setisChecked] = useState(false)
+  const dispatch = useDispatch()
 
   const [selectedDate, setSelectedDate] = useState(
-    `${moment(getTheMinimumSelectableYear()).format('yyyy-MM-DD')}`,
+    `${moment(new Date(getTheMinimumSelectableYear())).format('yyyy-MM-DD')}`,
   )
 
   const [age, setAge] = useState(18)
 
-  const [errorMessage, setErrorMessage] = useState('You are too young')
-
-  const [isError, setIsError] = useState(false)
-
-  const { data } = route.params
-
-  const UserInfo: UserProfile = data
-
   const handleSumbit = (values: { birth_date: any }) => {
-    if (values) {
-      const request = {
-        first_name: UserInfo.first_name,
-        email: UserInfo.email,
-        last_name: UserInfo.last_name,
-        password: UserInfo.password,
-        middle_name: UserInfo.middle_name,
-        phone: UserInfo.phone,
-        username: UserInfo.username,
-        profile: {
-          birth_date: values.birth_date,
-        },
-      }
+    const date_of_birth = values.birth_date ? values.birth_date : selectedDate
 
-      navigation.navigate('BasicDisclaimer', { data: request })
+    dispatch(
+      runAddRegistrationData({
+        dataType: 'DOB',
+        payload: {
+          birth_date: date_of_birth,
+        },
+      }),
+    )
+
+    if (date_of_birth) {
+      return navigation.navigate('BasicDisclaimer')
     }
 
-    console.log('================handleSumbit====================')
-    console.log(values)
-    console.log('====================================')
+    utils.showToastMessage('Please select a birthdate', 'WARNING')
   }
 
   const handleDateSelection = React.useCallback((date: MomentInput) => {
@@ -70,17 +63,6 @@ const BirthDayAge: React.FC<ScreenProps> = ({ navigation, route }) => {
 
     setAge(years)
 
-    if (years < 18) {
-      if (years < 0) {
-        setAge(0)
-        setErrorMessage('Invalid age')
-      }
-      setIsError(true)
-      setErrorMessage('You are too young')
-      return
-    }
-
-    setIsError(false)
     setSelectedDate(moment(date).format('yyyy-MM-DD'))
   }, [])
 
@@ -164,6 +146,7 @@ const BirthDayAge: React.FC<ScreenProps> = ({ navigation, route }) => {
           />
 
           <View style={styles.age}>
+            {/* eslint-disable-next-line react-native/no-inline-styles */}
             <View style={{ flexDirection: 'row' }}>
               <Text>You are: </Text>
               <Text>{age}</Text>

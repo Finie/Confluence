@@ -1,18 +1,18 @@
-import { Stomp } from '@stomp/stompjs'
-import { useContext, useEffect, useRef, useState } from 'react'
-import { Alert } from 'react-native'
-import SockJS from 'sockjs-client'
+/* eslint-disable import/order */
 
-import BaseContextProvider from 'src/context/BaseContextProvider'
+/* eslint-disable semi */
+import { Stomp } from '@stomp/stompjs'
+import { useEffect, useRef, useState } from 'react'
+import SockJS from 'sockjs-client'
+import utils from 'src/utils'
+
 import Constants from 'src/utils/Constants'
 
-const useStompSocket = (username: string | undefined) => {
+const useStompSocket = (username: string | undefined, token: string) => {
   const [connected, setConnected] = useState(false)
   const [messages, setMessages] = useState([])
   const [error, setError] = useState(null)
-  const { userToken } = useContext(BaseContextProvider)
 
-  const socketRef = useRef(null)
   const stompClientRef = useRef(null)
 
   useEffect(() => {
@@ -22,18 +22,19 @@ const useStompSocket = (username: string | undefined) => {
       const stompClient = Stomp.over(() => socket)
 
       stompClient.configure({
-        reconnectDelay: 5000,
+        reconnectDelay: 1000,
         heartbeatIncoming: 0,
         heartbeatOutgoing: 20000,
       })
 
+      //@ts-ignore
       stompClientRef.current = stompClient
 
       try {
         await new Promise<void>((resolve, reject) => {
           stompClient.connect(
             {
-              Authorization: 'Bearer ' + userToken,
+              Authorization: 'Bearer ' + token,
               'App-ID': Constants.APP_ID,
             },
             () => {
@@ -49,22 +50,27 @@ const useStompSocket = (username: string | undefined) => {
                 console.log(JSON.stringify(message))
                 console.log('====================================')
 
+                //@ts-ignore
                 setMessages(prevMessages => [
                   ...prevMessages,
                   JSON.parse(message.body),
                 ])
               })
 
-              stompClient.subscribe('/queue/errors', error => {
-                setError(error.body)
+              stompClient.subscribe('/queue/errors', _error => {
+                //@ts-ignore
+                setError(_error.body)
 
-                Alert.alert('Unable to send message', error.body)
+                utils.showToastMessage(
+                  `Unable to send message: ${_error.body}`,
+                  'ERROR',
+                )
               })
 
               stompClient.send(
                 '/api/message',
                 {
-                  Authorization: 'Bearer ' + userToken,
+                  Authorization: 'Bearer ' + token,
                   'App-ID': Constants.APP_ID,
                 },
                 JSON.stringify({ sender: username, type: 'JOIN' }),
@@ -72,21 +78,14 @@ const useStompSocket = (username: string | undefined) => {
 
               resolve()
             },
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             (error: any) => {
-              console.log('====================================')
-              console.log('Failed to Connect')
-              console.log('====================================')
-              console.log(`STOMP error: ${error}`)
-              console.log('====================================')
-              console.log('Failed to Connect')
-              console.log('====================================')
-
               reject(error)
             },
           )
         })
-      } catch (error) {
-        console.error('Failed to connect', error)
+      } catch (_error) {
+        utils.showToastMessage(`Failed to connect: ${_error}`, 'ERROR')
       }
     }
 
@@ -94,18 +93,20 @@ const useStompSocket = (username: string | undefined) => {
 
     return () => {
       if (connected) {
+        //@ts-ignore
         stompClientRef.current.disconnect(() => {
           setConnected(false)
         })
       }
     }
-  }, [username, userToken])
+  }, [connected, token, username])
 
   const sendMessage = (message: any) => {
+    //@ts-ignore
     stompClientRef.current.send(
       '/api/private-message',
       {
-        Authorization: 'Bearer ' + userToken,
+        Authorization: 'Bearer ' + token,
         'App-ID': Constants.APP_ID,
       },
       JSON.stringify(message),

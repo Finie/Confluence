@@ -20,6 +20,7 @@ interface Props {
   onInputPress?: () => void
   onChangeText: (text: string) => void
   onBlur: () => void
+  disabled?: boolean
 }
 
 const FloatingLabelInput: React.FC<Props> = ({

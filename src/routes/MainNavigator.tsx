@@ -1,3 +1,6 @@
+/* eslint-disable import/order */
+
+/* eslint-disable semi */
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { useEffect } from 'react'
 
@@ -8,6 +11,7 @@ import ChatRoom from 'src/screens/home/chats/ChatRoom'
 import ExploreScreen from 'src/screens/home/explore'
 import ExploreFilter from 'src/screens/home/explore/ExploreFilter'
 import ExploreResult from 'src/screens/home/explore/ExploreResult'
+import ParallaxScreen from 'src/screens/home/ParallaxScreen'
 import PaymentScreen from 'src/screens/home/payment/PaymentScreen'
 import AboutScreen from 'src/screens/home/settings/AboutScreen'
 import BlockedContacts from 'src/screens/home/settings/BlockedContacts'
@@ -19,7 +23,6 @@ import UserDescription from 'src/screens/home/UserDescription'
 
 import { MainStackParamList } from './navigation.type'
 import TabNavigator from './TabNavigator'
-import ParallaxScreen from 'src/screens/home/ParallaxScreen'
 
 const Stack = createStackNavigator<MainStackParamList>()
 
@@ -32,7 +35,6 @@ const MainNavigator = () => {
         token,
       }
 
-  
       await authRoute.notificationTokenPost(request)
     }
     if (token) {
