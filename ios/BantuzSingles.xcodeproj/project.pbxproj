@@ -11,6 +11,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		301219682B99A55000F77D5F /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 301219672B99A54F00F77D5F /* AppCenter-Config.plist */; };
 		3054072C2A5D6DD400B3BC73 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3054072B2A5D6DD400B3BC73 /* GoogleService-Info.plist */; };
 		41C0B0F7696861F938D37C63 /* libPods-BantuzSingles-BantuzSinglesTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B37720AB6ABA6FF9F01FFA6 /* libPods-BantuzSingles-BantuzSinglesTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -39,6 +40,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BantuzSingles/main.m; sourceTree = "<group>"; };
 		2520EA5ED04545EB81026BEB /* Pods-BantuzSingles-BantuzSinglesTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BantuzSingles-BantuzSinglesTests.debug.xcconfig"; path = "Target Support Files/Pods-BantuzSingles-BantuzSinglesTests/Pods-BantuzSingles-BantuzSinglesTests.debug.xcconfig"; sourceTree = "<group>"; };
 		2DFDD31CBFB18030F1867BFE /* libPods-BantuzSingles.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BantuzSingles.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		301219672B99A54F00F77D5F /* AppCenter-Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = "AppCenter-Config.plist"; path = "BantuzSingles/AppCenter-Config.plist"; sourceTree = "<group>"; };
 		3054072B2A5D6DD400B3BC73 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		308967DD29E3EBF800071C91 /* BantuzSingles.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = BantuzSingles.entitlements; path = BantuzSingles/BantuzSingles.entitlements; sourceTree = "<group>"; };
 		4AEFCEDB6285C4D2C371FBBD /* Pods-BantuzSingles.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BantuzSingles.release.xcconfig"; path = "Target Support Files/Pods-BantuzSingles/Pods-BantuzSingles.release.xcconfig"; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				301219672B99A54F00F77D5F /* AppCenter-Config.plist */,
 				13B07FAE1A68108700A75B9A /* BantuzSingles */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* BantuzSinglesTests */,
@@ -249,6 +252,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				301219682B99A55000F77D5F /* AppCenter-Config.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3054072C2A5D6DD400B3BC73 /* GoogleService-Info.plist in Resources */,
 			);

@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">BantuzSingles</string>
+    <string name="app_name" translatable="false">BantuzSingles</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey" translatable="false">DeploymentKey</string>
 </resources>

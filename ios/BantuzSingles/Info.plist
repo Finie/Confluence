@@ -35,6 +35,8 @@
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>
+			<key>codepush.appcenter.ms</key>
+			<dict><!-- read the ATS Apple Docs for available options --></dict>
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
@@ -74,5 +76,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CodePushPublicKey</key>
+    <string>-----BEGIN PUBLIC KEY-----
+	MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANkWYydPuyOumR/sn2agNBVDnzyRpM16NAUpYPGxNgjSEp0etkDNgzzdzyvyl+OsAGBYF3jCxYOXozum+uV5hQECAwEAAQ==
+	-----END PUBLIC KEY-----</string>
+	<key>CodePushDeploymentKey</key>
+	<string>$(IOS_CODE_PUSH_KEY)</string>
 </dict>
 </plist>

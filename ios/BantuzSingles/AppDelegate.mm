@@ -1,7 +1,11 @@
 #import "AppDelegate.h"
 #import <Firebase.h>
-
+#import <CodePush/CodePush.h>
 #import <React/RCTBundleURLProvider.h>
+#import <AppCenterReactNative.h>
+#import <AppCenterReactNativeAnalytics.h>
+#import <AppCenterReactNativeCrashes.h>
+
 
 // Import RNSplashScreen
 // #import "RNSplashScreen.h"
@@ -10,7 +14,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [FIRApp configure];
+  [FIRApp configure]; //firebase configuration
+  [AppCenterReactNative register]; // appcenter configuration
+  [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true]; // appcenter configuration
+  [AppCenterReactNativeCrashes registerWithAutomaticProcessing]; // appcenter configuration
+  
   self.moduleName = @"BantuzSingles";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
@@ -25,7 +33,8 @@
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  return [CodePush bundleURL];
+//  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 }
 
