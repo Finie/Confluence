@@ -57,7 +57,7 @@ const UpdatingApp: React.FC<CodePushLoadingProps> = ({
     if (isAuthorized) {
       setuserData(userSession)
       setIsLoadingApp(false)
-      SplashScreen.hide()
+      // SplashScreen.hide()
     }
   }, [isAuthorized, setIsLoadingApp, setuserData, userSession])
 

@@ -6,7 +6,7 @@
 import { useStripe } from '@stripe/stripe-react-native'
 import React, { useState } from 'react'
 import { Linking } from 'react-native'
-import CodePush from 'react-native-code-push'
+import CodePush, { CodePushOptions } from 'react-native-code-push'
 import { ModalPortal } from 'react-native-modals'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
@@ -23,7 +23,7 @@ import UpdatingApp from './utils/UpdatingApp'
 
 import Navigator from './routes'
 
-const CodePushConfig = {
+const CodePushConfig: CodePushOptions = {
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
   mandatoryInstallMode: CodePush.InstallMode.IMMEDIATE,
   updateDialog: {

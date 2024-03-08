@@ -81,6 +81,6 @@
 	MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANkWYydPuyOumR/sn2agNBVDnzyRpM16NAUpYPGxNgjSEp0etkDNgzzdzyvyl+OsAGBYF3jCxYOXozum+uV5hQECAwEAAQ==
 	-----END PUBLIC KEY-----</string>
 	<key>CodePushDeploymentKey</key>
-	<string>$(IOS_CODE_PUSH_KEY)</string>
+	<string>CkC_h35udyUy5_njCSikYcZuxV6NZYAOKwjw0</string>
 </dict>
 </plist>

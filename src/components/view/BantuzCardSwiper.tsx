@@ -323,7 +323,7 @@ const BantuzCardSwiper: React.FC<Props> = ({
       width: 50,
       height: 50,
       borderRadius: 30,
-      backgroundColor: colors.silver,
+      backgroundColor: 'red',
       justifyContent: 'center',
       alignItems: 'center',
     },

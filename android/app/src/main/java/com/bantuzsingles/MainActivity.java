@@ -1,14 +1,15 @@
 package com.bantuzsingles;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
-
-import androidx.annotation.Nullable;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
+
 import org.devio.rn.splashscreen.SplashScreen; // here
 
 
@@ -20,6 +21,7 @@ public class MainActivity extends ReactActivity {
     SplashScreen.show(this, true );
     // here
     super.onCreate(savedInstanceState);
+    AppCenter.start(getApplication(), "d6f90d07-570b-4c8a-952b-3a3c1ad23925", Analytics.class, Crashes.class);
   }
 
   @Override
